@@ -44,6 +44,7 @@ public class Bot extends TelegramLongPollingBot {
         keyboardMarkup.setKeyboard(keyboard);
     }
 
+
     @Override
     public void onUpdateReceived(Update update) {            // update содержит сообщение от пользователя
         String message = update.getMessage().getText();
