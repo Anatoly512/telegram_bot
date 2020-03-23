@@ -15,8 +15,7 @@ public class Bot extends TelegramLongPollingBot {
     String botUserName = "questSuper_Bot";
     String botToken = "904172873:AAG1PY5RZnAwAYFHB-McdI8ogWvjzcBNPto";
 
-    Long chat_id;
-    String chat_id_String;
+    Long chatId;
 
     boolean ifFirstMessage = true;
 
@@ -49,52 +48,51 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {            // update содержит сообщение от пользователя
         String message = update.getMessage().getText();
 
-        chat_id = update.getMessage().getChatId();
-        chat_id_String = chat_id.toString();
+        chatId = update.getMessage().getChatId();
 
         try {
             //  Тестовая строка
-            sendMsg(chat_id_String, message);     //  Отправляет сообщение назад (нужно для тестирования)
+            sendMsg(chatId, message);     //  Отправляет сообщение назад (нужно для тестирования)
 
 
             //  Если это самое первое сообщение от пользователя
             if (message != null && update.getMessage().hasText()) {
                 if (ifFirstMessage) {
-                    sendMsg(chat_id_String, "❤");
-                    sendMsg(chat_id_String, "Спасибо, что подключились к нам !  \uD83D\uDE04 ");
+                    sendMsg(chatId, "❤");
+                    sendMsg(chatId, "Спасибо, что подключились к нам !  \uD83D\uDE04 ");
                     ifFirstMessage = false;
                 }
             }
 
             //  Тестовая строка
-            System.out.println("\nChat id  :  " + chat_id + "\n" + update);
+            System.out.println("\nChat id  :  " + chatId + "\n" + update);
 
 
 
             if (message.equals("/start")) {
-                sendMsg(chat_id_String, "Hello, world !!!  Starting conversation !!!");
+                sendMsg(chatId, "Hello, world !!!  Starting conversation !!!");
             }
 
             if (message.equals("/help")) {
-                sendMsg(chat_id_String, "Hello !   I'll try to help you !");
+                sendMsg(chatId, "Hello !   I'll try to help you !");
             }
 
 
 
             if (message.equals(VARIANT_1)) {
-                sendMsg(chat_id_String, "Processing  Variant 1   !");
+                sendMsg(chatId, "Processing  Variant 1   !");
             }
 
             if (message.equals(VARIANT_2)) {
-                sendMsg(chat_id_String, "Processing  Variant 2   !");
+                sendMsg(chatId, "Processing  Variant 2   !");
             }
 
             if (message.equals(VARIANT_3)) {
-                sendMsg(chat_id_String, "Processing  Variant 3   !");
+                sendMsg(chatId, "Processing  Variant 3   !");
             }
 
             if (message.equals(VARIANT_4)) {
-                sendMsg(chat_id_String, "Processing  Variant 4   !");
+                sendMsg(chatId, "Processing  Variant 4   !");
             }
 
 
@@ -109,7 +107,7 @@ public class Bot extends TelegramLongPollingBot {
 
 
 
-    public synchronized void sendMsg(String chatId, String messageString) throws TelegramApiException {
+    public synchronized void sendMsg(Long chatId, String messageString) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
@@ -145,9 +143,9 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    public String getChat_id() {       //  Вдруг понадобится
+    public Long getChatId() {       //  Вдруг понадобится
 
-        return chat_id_String;
+        return chatId;
     }
 
 }
