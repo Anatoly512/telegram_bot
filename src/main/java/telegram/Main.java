@@ -14,7 +14,7 @@ public class Main {
 
         System.out.println("Start !\n");
 
-//*      //  Проверка JSON
+/*      //  Проверка JSON
         ArrayList<String> myList = new ArrayList<>();
 
         myList.add("Hello, ");
@@ -27,7 +27,7 @@ public class Main {
         System.out.println(JSON);
         System.out.println(gson.fromJson(JSON, ArrayList.class));
 
- //*/
+*/
 
 
         ApiContextInitializer.init();
