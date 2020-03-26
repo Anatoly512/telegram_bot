@@ -270,7 +270,9 @@ Bot() {
             //  Запуск анализа результатов
             analyseResults(this.pointsForUser);
         }
-
+          //  !!!  ЗДЕСЬ НУЖЕН  else  <ELSE>  !!!   //  Вот откуда вылазила ошибка с выходом за границы массива !!!
+          //  так как после окончания опроса (numberOfQuestion >= 8) кусок кода снизу продолжал выполняться
+          //  а там вывод очередного вопроса
 
         try {
             sendMsg(chatId, listOfQuestions.get(this.numberOfQuestion));     //  Задается очередной вопрос
