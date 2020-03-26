@@ -1,11 +1,13 @@
 package telegram;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +22,23 @@ public class Bot extends TelegramLongPollingBot {
     Messages messageStrings = new Messages();
     boolean ifFirstMessage = true;
 
+    int numberOfQuestion = 0;
+    int pointsForUser = 0;
+
+    List<String> listOfQuestions = new ArrayList<>();
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
 Bot() {
-    List<KeyboardRow> keyboard = new ArrayList<>();    //  Настройка в конструкторе пользовательской клавиатуры
-    keyboardMarkup.setResizeKeyboard(true);
-    KeyboardRow row = new KeyboardRow();
+    keyboardMarkupTwoButtons();     //  Настройка в конструкторе пользовательской клавиатуры
 
-    row.add(messageStrings.BUTTON_1_CREATE_WHEEL);
-    row.add(messageStrings.BUTTON_2_HELP);
-
-    keyboard.add(row);
-    keyboardMarkup.setKeyboard(keyboard);
+    listOfQuestions.add(messageStrings.SPHERE_1_CAREER);        //  Создание списка вопросов
+    listOfQuestions.add(messageStrings.SPHERE_2_FAMILY);
+    listOfQuestions.add(messageStrings.SPHERE_3_WEALTH);
+    listOfQuestions.add(messageStrings.SPHERE_4_ENVIROMENT);
+    listOfQuestions.add(messageStrings.SPHERE_5_DEVELOPMENT);
+    listOfQuestions.add(messageStrings.SPHERE_6_RECREATION);
+    listOfQuestions.add(messageStrings.SPHERE_7_TRAVELS);
+    listOfQuestions.add(messageStrings.SPHERE_8_HEALTH);
 }
 
 
@@ -74,63 +81,101 @@ Bot() {
 
                 sendMsg(chatId, messageStrings.START);
 
+                wheelCreate(chatId);   //  Запуск метода создания "колеса" для пользователя <chatId>
+                                       //  Это вариант для логики сообщений с собственной прикрепленной клавиатурой
+
+                //  Есть две логики создания "колеса" :
+                //  1)  Посылать сообщения с собственной прикрепленной клавиатурой
+                //  2)  Использовать одну клавиатуру для всех   <Пока что основной вариант, как самый простой и рациональный>
+
+
+                questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
+
+
             }
 
 
-            //  Здесь идет логика составления колеса жизненного баланса
+            //  Здесь идет логика составления колеса жизненного баланса  (начисление баллов за ответ)
 
             if (message.equals(messageStrings.BUTTON_1)) {
 
-                //  Вызвать метод с парамерами (1. Куда (по номеру переменной\баскета) плюсовать  2. Сколько поинтов )
+                sendMsg(chatId, messageStrings.POINTS_1);
 
-                sendMsg(chatId, "Point 1 ");
+                questionAsk(chatId, 1);
+
             }
 
             if (message.equals(messageStrings.BUTTON_2)) {
 
-                sendMsg(chatId, "Point 2 ");
+                sendMsg(chatId, messageStrings.POINTS_2);
+
+                questionAsk(chatId, 2);
+
             }
 
             if (message.equals(messageStrings.BUTTON_3)) {
 
-                sendMsg(chatId, "Point 3 ");
+                sendMsg(chatId, messageStrings.POINTS_3);
+
+                questionAsk(chatId, 3);
+
             }
 
             if (message.equals(messageStrings.BUTTON_4)) {
 
-                sendMsg(chatId, "Point 4 ");
+                sendMsg(chatId, messageStrings.POINTS_4);
+
+                questionAsk(chatId, 4);
+
             }
 
             if (message.equals(messageStrings.BUTTON_5)) {
 
-                sendMsg(chatId, "Point 5 ");
+                sendMsg(chatId, messageStrings.POINTS_5);
+
+                questionAsk(chatId, 5);
+
             }
 
             if (message.equals(messageStrings.BUTTON_6)) {
 
-                sendMsg(chatId, "Point 6 ");
+                sendMsg(chatId, messageStrings.POINTS_6);
+
+                questionAsk(chatId, 6);
+
             }
 
             if (message.equals(messageStrings.BUTTON_7)) {
 
-                sendMsg(chatId, "Point 7 ");
+                sendMsg(chatId, messageStrings.POINTS_7);
+
+                questionAsk(chatId, 7);
+
             }
 
             if (message.equals(messageStrings.BUTTON_8)) {
 
-                sendMsg(chatId, "Point 8 ");
+                sendMsg(chatId, messageStrings.POINTS_8);
+
+                questionAsk(chatId, 8);
+
             }
 
             if (message.equals(messageStrings.BUTTON_9)) {
 
-                sendMsg(chatId, "Point 9 ");
+                sendMsg(chatId, messageStrings.POINTS_9);
+
+                questionAsk(chatId, 9);
+
             }
 
             if (message.equals(messageStrings.BUTTON_10)) {
 
-                sendMsg(chatId, "Point 10 ");
-            }
+                sendMsg(chatId, messageStrings.POINTS_10);
 
+                questionAsk(chatId, 10);
+
+            }
 
 
 
@@ -165,9 +210,9 @@ Bot() {
 
 
 
-    private List<KeyboardRow> keyboardMarkupNew() {
+    private List<KeyboardRow> keyboardMarkupNew() {                   //  Настройка новой пользовательской клавиатуры на 10 кнопок  (points)
 
-        List<KeyboardRow> keyboardNew = new ArrayList<>();       //  Настройка новой пользовательской клавиатуры
+        List<KeyboardRow> keyboardNew = new ArrayList<>();
         KeyboardRow firstRow = new KeyboardRow();
         KeyboardRow secondRow = new KeyboardRow();
 
@@ -188,6 +233,112 @@ Bot() {
         keyboardMarkup.setResizeKeyboard(true);
 
         return keyboardNew;
+    }
+
+
+
+    private void keyboardMarkupTwoButtons() {     //  Настройка пользовательской клавиатуры на 2 кнопки (Старт и Помощь)
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboardMarkup.setResizeKeyboard(true);
+        KeyboardRow row = new KeyboardRow();
+
+        row.add(messageStrings.BUTTON_1_CREATE_WHEEL);
+        row.add(messageStrings.BUTTON_2_HELP);
+
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+
+    }
+
+    private void wheelCreate(Long chatId) {     //  Пока что тестовый метод   (для сообщений с собственной прикрепленной клавиатурой)
+
+        System.out.println("\nСоздаем колесо жизненного баланса для пользователя  chatId :  " + chatId);
+
+    }
+
+
+
+    private void questionAsk (Long chatId, int points) throws TelegramApiException {
+
+        this.pointsForUser = this.pointsForUser + points;   //  начисление баллов за предыдущий ответ  (0 если вопрос первый)
+
+        if (this.numberOfQuestion >= 8) {
+            //  Окончание опроса
+            sendMsg(chatId, messageStrings.TEST_COMPLETE);
+
+            //  Запуск анализа результатов
+            analyseResults(this.pointsForUser);
+        }
+
+
+        try {
+            sendMsg(chatId, listOfQuestions.get(this.numberOfQuestion));     //  Задается очередной вопрос
+        }
+
+        catch (IndexOutOfBoundsException e) {
+         //   System.out.println("Выход за границы массива : " + e.toString());
+        }
+        catch (Exception n) {
+            System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
+        }
+
+        this.numberOfQuestion++;
+
+
+    }
+
+
+    private void analyseResults (int points) throws TelegramApiException {
+
+
+        points = points % 80;
+        if (points == 0) points = 100;   //  Нужно для корректного выведения результатов, если выбрано по 10 баллов на каждый вопрос
+
+        String result = String.valueOf(points) + "%";
+
+        sendMsg(chatId, messageStrings.RESULT);
+        sendMsg(chatId, result);
+
+
+        //  Здесь надо как-то завершить опрос, иначе получится бесконечный цикл
+
+        //  Обнуление всех переменных  (нужно для начала опроса заново по желанию пользователя)
+
+        this.numberOfQuestion = -1;   //  Так счет вопросов потом начнется с 0 индекса   (т.е. с единицы с точки зрения пользователя)
+        this.pointsForUser = 0;
+
+        keyboardMarkupTwoButtons();   //  Переводим клавиатуру в изначальное состояние (на 2 кнопки)
+
+        sendMsg(chatId, messageStrings.SMILE);
+        sendMsg(chatId, messageStrings.REPEAT);    //  Пробуем запуск бота с самого начала
+
+
+
+        //  Попробуем рекурсию...  <Просто интересно, получится ли>
+        //  recurseBot();
+
+
+
+    }
+
+
+
+    public void recurseBot() {         //  Попробуем рекурсию...  <Просто интересно, получится ли>    Тестовый метод
+
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
+        Bot myBot = new Bot();
+
+        try {
+            telegramBotsApi.registerBot(myBot);
+        }
+        catch (TelegramApiRequestException e) {
+            System.out.println("Ошибка при регистрации бота : " + e.toString());
+        }
+        catch (Exception n) {
+            System.out.println("Ошибка неустановленной природы при запросе к боту : " + n.toString());
+        }
+
     }
 
 
