@@ -42,8 +42,6 @@ Bot() {
         chatId = update.getMessage().getChatId();
 
         try {
-            sendMsg(chatId, message);     //  Отправляет сообщение назад (нужно для тестирования)
-
             //  Тестовая строка
             System.out.println("\nChat id  :  " + chatId + "\n" + update);
 
@@ -77,7 +75,6 @@ Bot() {
                 sendMsg(chatId, messageStrings.START);
 
             }
-
 
 
             //  Здесь идет логика составления колеса жизненного баланса
