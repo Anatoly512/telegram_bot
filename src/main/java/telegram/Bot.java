@@ -4,7 +4,6 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -77,14 +76,63 @@ Bot() {
 
                 sendMsg(chatId, messageStrings.START);
 
-                //  Здесь идет логика составления колеса жизненного баланса
-
-
-
-
             }
 
 
+
+            //  Здесь идет логика составления колеса жизненного баланса
+
+            if (message.equals(messageStrings.BUTTON_1)) {
+
+                //  Вызвать метод с парамерами (1. Куда (по номеру переменной\баскета) плюсовать  2. Сколько поинтов )
+
+                sendMsg(chatId, "Point 1 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_2)) {
+
+                sendMsg(chatId, "Point 2 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_3)) {
+
+                sendMsg(chatId, "Point 3 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_4)) {
+
+                sendMsg(chatId, "Point 4 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_5)) {
+
+                sendMsg(chatId, "Point 5 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_6)) {
+
+                sendMsg(chatId, "Point 6 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_7)) {
+
+                sendMsg(chatId, "Point 7 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_8)) {
+
+                sendMsg(chatId, "Point 8 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_9)) {
+
+                sendMsg(chatId, "Point 9 ");
+            }
+
+            if (message.equals(messageStrings.BUTTON_10)) {
+
+                sendMsg(chatId, "Point 10 ");
+            }
 
 
 
