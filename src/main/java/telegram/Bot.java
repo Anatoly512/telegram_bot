@@ -1,13 +1,11 @@
 package telegram;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,7 @@ public class Bot extends TelegramLongPollingBot {
     int pointsForUser = 0;
 
     List<String> listOfQuestions = new ArrayList<>();
+
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
 Bot() {
@@ -251,6 +250,7 @@ Bot() {
 
     }
 
+
     private void wheelCreate(Long chatId) {     //  Пока что тестовый метод   (для сообщений с собственной прикрепленной клавиатурой)
 
         System.out.println("\nСоздаем колесо жизненного баланса для пользователя  chatId :  " + chatId);
@@ -270,23 +270,19 @@ Bot() {
             //  Запуск анализа результатов
             analyseResults(this.pointsForUser);
         }
-          //  !!!  ЗДЕСЬ НУЖЕН  else  <ELSE>  !!!   //  Вот откуда вылазила ошибка с выходом за границы массива !!!
-          //  так как после окончания опроса (numberOfQuestion >= 8) кусок кода снизу продолжал выполняться
-          //  а там вывод очередного вопроса
+        else {
+            try {
+                sendMsg(chatId, listOfQuestions.get(this.numberOfQuestion));     //  Задается очередной вопрос
+            }
+            catch (IndexOutOfBoundsException e) {
+                System.out.println("Выход за границы массива : " + e.toString());
+            }
+            catch (Exception n) {
+                System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
+            }
 
-        try {
-            sendMsg(chatId, listOfQuestions.get(this.numberOfQuestion));     //  Задается очередной вопрос
+            this.numberOfQuestion++;
         }
-
-        catch (IndexOutOfBoundsException e) {
-         //   System.out.println("Выход за границы массива : " + e.toString());
-        }
-        catch (Exception n) {
-            System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
-        }
-
-        this.numberOfQuestion++;
-
 
     }
 
@@ -307,7 +303,7 @@ Bot() {
 
         //  Обнуление всех переменных  (нужно для начала опроса заново по желанию пользователя)
 
-        this.numberOfQuestion = -1;   //  Так счет вопросов потом начнется с 0 индекса   (т.е. с единицы с точки зрения пользователя)
+        this.numberOfQuestion = 0;
         this.pointsForUser = 0;
 
         keyboardMarkupTwoButtons();   //  Переводим клавиатуру в изначальное состояние (на 2 кнопки)
@@ -317,31 +313,8 @@ Bot() {
 
 
 
-        //  Попробуем рекурсию...  <Просто интересно, получится ли>
-        //  recurseBot();
-
-
-
     }
 
-
-
-    public void recurseBot() {         //  Попробуем рекурсию...  <Просто интересно, получится ли>    Тестовый метод
-
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        Bot myBot = new Bot();
-
-        try {
-            telegramBotsApi.registerBot(myBot);
-        }
-        catch (TelegramApiRequestException e) {
-            System.out.println("Ошибка при регистрации бота : " + e.toString());
-        }
-        catch (Exception n) {
-            System.out.println("Ошибка неустановленной природы при запросе к боту : " + n.toString());
-        }
-
-    }
 
 
 
