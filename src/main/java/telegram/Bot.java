@@ -189,7 +189,7 @@ Bot() {
 
 
 
-    public synchronized void sendMsg(Long chatId, String messageString) throws TelegramApiException {
+    public synchronized void sendMsg(Long chatId, String messageString) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
@@ -287,7 +287,7 @@ Bot() {
     }
 
 
-    private void analyseResults (int points) throws TelegramApiException {
+    private void analyseResults (int points)  {
 
 
         points = points % 80;
