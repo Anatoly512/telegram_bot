@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class CalculateSpheres {
 
 
-    public int[] calculateResults (int[] array) {
+    public synchronized int[] calculateResults (int[] array) {
         //  Вывод максимального и минимального числа в массиве
         //  методом собственной сортировки массива (слева направо, по убыванию)
 
@@ -43,7 +43,7 @@ public class CalculateSpheres {
     }
 
 
-    private int[] mySortArray (int ...array) {
+    private synchronized int[] mySortArray (int ...array) {
         //  Сортировки массива слева направо, по убыванию
         //  и возврат отсортированного массива в вызывающий метод
 

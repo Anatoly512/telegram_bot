@@ -15,11 +15,12 @@ public class Bot extends TelegramLongPollingBot {
     String botToken = "904172873:AAG1PY5RZnAwAYFHB-McdI8ogWvjzcBNPto";
 
     Messages messageStrings = new Messages();
+    Long chatId;
 
     List<String> listOfQuestions = new ArrayList<>();
 
     Map<Long, Map<String, Object>> users = new HashMap<>();   // общий список пользователей в формате :  [chatID пользователя] - [его результаты в виде HashMap]
-    Map<String, Object> resultsForUser = new HashMap<>();    //  встроенная в HashMap <users> еще одна HashMap для записи результатов для каждого пользователя
+//    Map<String, Object> resultsForUser = new HashMap<>();    //  встроенная в HashMap <users> еще одна HashMap для записи результатов для каждого пользователя
 
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
@@ -42,61 +43,62 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {            // update содержит сообщение от пользователя
 
         String message = update.getMessage().getText();
-        Long chatId = update.getMessage().getChatId();
+        this.chatId = update.getMessage().getChatId();
 
-        try {
-            //  Тестовая строка
-            System.out.println("\nChat id  :  " + chatId + "\n" + update);
+        synchronized (this.chatId) {
 
-
-            if (!users.containsKey(chatId)) {     //  Если такого <chatId> еще нет в HashMap <users>
-
-                createNewUser(chatId);      //  Создание новой записи (пользователя) в HashMap <users>
-            }
+            try {
+                //  Тестовая строка
+                System.out.println("\nChat id  :  " + chatId + "\n" + update);
 
 
-            //  Если это самое первое сообщение от пользователя
-            if (message != null && update.getMessage().hasText()) {
-                if ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE)) {   //  проверяется переменная из вложенной HashMap <resultsForUser> для пользователя <chatId>
+                if (!users.containsKey(chatId)) {     //  Если такого <chatId> еще нет в HashMap <users>
 
-                    sendMsg(chatId, messageStrings.SMILE);
-                    sendMsg(chatId, messageStrings.THANK_YOU);
+                    createNewUser(chatId);      //  Создание новой записи (пользователя) в HashMap <users>
+                }
+
+
+                //  Если это самое первое сообщение от пользователя
+                if (message != null && update.getMessage().hasText()) {
+                    if ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE)) {   //  проверяется переменная из вложенной HashMap <resultsForUser> для пользователя <chatId>
+
+                        sendMsg(chatId, messageStrings.SMILE);
+                        sendMsg(chatId, messageStrings.THANK_YOU);
+                        sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
+
+                        users.get(chatId).put(messageStrings.IF_FIRST_MESSAGE, false);    //  заносится во вложенную HashMap <resultsForUser> для пользователя <chatId>
+
+                    }
+                }
+
+
+                if (message.equals("/start")) {      //  Возможность печатать команду с клавиатуры
                     sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
+                }
 
-                    users.get(chatId).put(messageStrings.IF_FIRST_MESSAGE, false);    //  заносится во вложенную HashMap <resultsForUser> для пользователя <chatId>
+                if (message.equals("/help") || (message.equals(messageStrings.BUTTON_2_HELP))) {
+                    sendMsg(chatId, messageStrings.HELP);
+                }
+
+
+                if (message.equals(messageStrings.BUTTON_1_CREATE_WHEEL)) {      //  Самое начало создания колеса
+
+                    keyboardMarkup.setKeyboard(keyboardMarkupNew());      //  Установка клавиатуры для ответов на 10 кнопок
+
+                    sendMsg(chatId, messageStrings.START);
+
+                    questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
 
                 }
+
+                createWheel(message, chatId);     //  Составление колеса жизненного баланса  (начисление баллов за ответ)
+
+
+            } catch (TelegramApiException e) {
+                System.out.println("Ошибка при приеме сообщения от пользователя : " + e.toString());
+            } catch (Exception n) {
+                System.out.println("Ошибка неустановленной природы при приеме сообщения : " + n.toString());
             }
-
-
-            if (message.equals("/start")) {      //  Возможность печатать команду с клавиатуры
-                sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
-            }
-
-            if (message.equals("/help") || (message.equals(messageStrings.BUTTON_2_HELP))) {
-                sendMsg(chatId, messageStrings.HELP);
-            }
-
-
-            if (message.equals(messageStrings.BUTTON_1_CREATE_WHEEL)) {      //  Самое начало создания колеса
-
-                keyboardMarkup.setKeyboard(keyboardMarkupNew());      //  Установка клавиатуры для ответов на 10 кнопок
-
-                sendMsg(chatId, messageStrings.START);
-
-                questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
-
-            }
-
-            createWheel(message, chatId);     //  Составление колеса жизненного баланса  (начисление баллов за ответ)
-
-
-        }
-        catch (TelegramApiException e) {
-            System.out.println("Ошибка при приеме сообщения от пользователя : " + e.toString());
-        }
-        catch (Exception n) {
-            System.out.println("Ошибка неустановленной природы при приеме сообщения : " + n.toString());
         }
     }
 
@@ -122,7 +124,7 @@ public class Bot extends TelegramLongPollingBot {
 
 
 
-    private void questionAsk(Long chatId, int points) throws TelegramApiException {
+    private synchronized void questionAsk(Long chatId, int points) throws TelegramApiException {
 
         //  начисление общих баллов за предыдущий ответ  (0 если вопрос первый)
 
@@ -164,7 +166,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private void analyseResults(Long chatId) {
+    private synchronized void analyseResults(Long chatId) {
 
         //  Тестовая строка
         System.out.println("\nПользователь chatId : " + chatId + " -> РЕЗУЛЬТАТЫ  :  " + users.get(chatId));
@@ -198,11 +200,23 @@ public class Bot extends TelegramLongPollingBot {
         sendMsg(chatId, messageStrings.SMILE);
         sendMsg(chatId, messageStrings.REPEAT);    //  Начинаем запуск бота с самого начала
 
+        //  Удаление юзера из HashMap
+
+        synchronized (users) {
+            try {
+                users.remove(chatId);
+
+                System.out.println("\nПользователь с chatId :  " + chatId + "  завершил опрос и был удален из пула пользователей!");
+            }
+            catch (Exception e) {
+                System.out.println("Ошибка при удалении объекта из HashMap :  " + e.toString());
+            }
+        }
 
     }
 
 
-    private void spheresMaxAndMinCalculate (Long chatId) {
+    private synchronized void spheresMaxAndMinCalculate (Long chatId) {
 
         int[] nums = new int[messageStrings.AMOUNT_OF_SPHERES];
 
@@ -336,7 +350,9 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private void createNewUser (Long chatId) {
+    private synchronized void createNewUser (Long chatId) {
+
+        Map<String, Object> resultsForUser = new HashMap<>();
 
         resultsForUser.put(messageStrings.BUTTON_1, 0);
         resultsForUser.put(messageStrings.BUTTON_2, 0);
@@ -362,7 +378,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private void createWheel (String message, Long chatId) throws TelegramApiException {
+    private synchronized void createWheel (String message, Long chatId) throws TelegramApiException {
 
         //  Составление колеса жизненного баланса  (начисление баллов за ответ)
 
@@ -450,7 +466,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private List<KeyboardRow> keyboardMarkupNew() {                   //  Настройка новой пользовательской клавиатуры на 10 кнопок
+    private synchronized List<KeyboardRow> keyboardMarkupNew() {                   //  Настройка новой пользовательской клавиатуры на 10 кнопок
 
         List<KeyboardRow> keyboardNew = new ArrayList<>();
         KeyboardRow firstRow = new KeyboardRow();
@@ -476,7 +492,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private void keyboardMarkupTwoButtons() {     //  Настройка пользовательской клавиатуры на 2 кнопки ("Старт" и "Помощь")
+    private synchronized void keyboardMarkupTwoButtons() {     //  Настройка пользовательской клавиатуры на 2 кнопки ("Старт" и "Помощь")
 
         List<KeyboardRow> keyboard = new ArrayList<>();
         keyboardMarkup.setResizeKeyboard(true);
