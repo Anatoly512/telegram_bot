@@ -52,7 +52,7 @@ public class Bot extends TelegramLongPollingBot {
             System.out.println("\nChat id  :  " + chatId + "\n" + update);
 
 
-            if (!users.containsKey(chatId)) {     //  Если такого chatId еще нет в HashMap <users>
+            if (!users.containsKey(chatId)) {     //  Если такого <chatId> еще нет в HashMap <users>
 
                 createNewUser(chatId);      //  Создание новой записи (пользователя) в HashMap <users>
             }
@@ -87,10 +87,6 @@ public class Bot extends TelegramLongPollingBot {
 
                 sendMsg(chatId, messageStrings.START);
 
-                //  Есть две логики создания "колеса" :
-                //  1)  Посылать сообщения с собственной прикрепленной клавиатурой
-                //  2)  Использовать одну клавиатуру для всех   <Пока что основной вариант, как самый простой и рациональный>
-
                 questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
 
             }
@@ -98,9 +94,11 @@ public class Bot extends TelegramLongPollingBot {
             createWheel(message, chatId);     //  Составление колеса жизненного баланса  (начисление баллов за ответ)
 
 
-        } catch (TelegramApiException e) {
+        }
+        catch (TelegramApiException e) {
             System.out.println("Ошибка при приеме сообщения от пользователя : " + e.toString());
-        } catch (Exception n) {
+        }
+        catch (Exception n) {
             System.out.println("Ошибка неустановленной природы при приеме сообщения : " + n.toString());
         }
     }
@@ -116,9 +114,11 @@ public class Bot extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
 
-        } catch (TelegramApiException e) {
+        }
+        catch (TelegramApiException e) {
             System.out.println("Ошибка при отправке сообщения : " + e.toString());
-        } catch (Exception n) {
+        }
+        catch (Exception n) {
             System.out.println("Ошибка неустановленной природы (при попытке отправить сообщение) : " + n.toString());
         }
     }
@@ -127,57 +127,80 @@ public class Bot extends TelegramLongPollingBot {
 
     private void questionAsk(Long chatId, int points) throws TelegramApiException {
 
-        //  GET  users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE)
-        //  PUT  users.get(chatId).put(messageStrings.IF_FIRST_MESSAGE, false);
+        //  начисление общих баллов за предыдущий ответ  (0 если вопрос первый)
 
-        this.pointsForUser = this.pointsForUser + points;   //  начисление баллов за предыдущий ответ  (0 если вопрос первый)
+        users.get(chatId).put(messageStrings.POINTS_FOR_USER, (int) (users.get(chatId)).get(messageStrings.POINTS_FOR_USER) + points);
 
-        if (this.numberOfQuestion >= messageStrings.AMOUNT_OF_SPHERES) {       //  Количество вопросов прописано в классе Messages, вместе со сферами
+
+        //  занесение балла именно за конкретный вопрос (номер <NUMBER_OF_QUESTION>) в соответствующее поле в HashMap <resultsForUser>
+
+        users.get(chatId).put( String.valueOf((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)),  points);
+
+
+        if ((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) >= messageStrings.AMOUNT_OF_SPHERES) {  //  Количество вопросов прописано в классе Messages, вместе со сферами
             //  Окончание опроса
             sendMsg(chatId, messageStrings.TEST_COMPLETE);
 
-            //  Запуск анализа результатов
-            analyseResults(chatId, this.pointsForUser);
+            //  Запуск анализа результатов для пользователя <chatId>
+            analyseResults(chatId);
         }
-        else {
+        else
+            {
             try {
-                sendMsg(chatId, listOfQuestions.get(this.numberOfQuestion));     //  Задается очередной вопрос
+                //  Задается очередной вопрос
+                sendMsg(chatId, listOfQuestions.get((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)));
             }
             catch (IndexOutOfBoundsException e) {
                 System.out.println("Выход за границы массива : " + e.toString());
-            } catch (Exception n) {
+            }
+            catch (Exception n) {
                 System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
             }
 
-            this.numberOfQuestion++;
+
+            //  Готовим следующий вопрос для пользователя <chatId>
+            //  Номер записывается в соответствующее поле в HashMap <resultsForUser>
+
+            users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, (int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) + 1);
         }
 
     }
 
 
-    private void analyseResults(Long chatId, int points) {
+    private void analyseResults(Long chatId) {
+
+        //  Тестовая строка
+        System.out.println("\nПользователь chatId : " + chatId + " -> РЕЗУЛЬТАТЫ  :  " + users.get(chatId));
+
+
+        int points = (int) (users.get(chatId)).get(messageStrings.POINTS_FOR_USER);
 
         points = points % 80;
         if (points == 0)
             points = 100;   //  Нужно для корректного выведения результатов, если выбрано по 10 баллов на каждый вопрос
 
-        String result = String.valueOf(points) + "%";
 
-        sendMsg(chatId, messageStrings.RESULT);
+        String result = messageStrings.RESULT + String.valueOf(points) + "%";
         sendMsg(chatId, result);
 
+        //  Вывод наименьших и наибольших значений развития сфер пользователя
+        //  ...
+        //  ...
 
-        //  Здесь надо как-то завершить опрос, иначе получится бесконечный цикл
+
+
+        //  Завершение опроса
 
         //  Обнуление всех переменных  (нужно для начала опроса заново по желанию пользователя)
 
-        this.numberOfQuestion = 0;
-        this.pointsForUser = 0;
+        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);
+        users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);
 
-        keyboardMarkupTwoButtons();   //  Переводим клавиатуру в изначальное состояние (на 2 кнопки)
+
+        keyboardMarkupTwoButtons();   //  Переводим клавиатуру в изначальное состояние (на 2 кнопки -> "Старт" и "Помощь")
 
         sendMsg(chatId, messageStrings.SMILE);
-        sendMsg(chatId, messageStrings.REPEAT);    //  Пробуем запуск бота с самого начала
+        sendMsg(chatId, messageStrings.REPEAT);    //  Начинаем запуск бота с самого начала
 
 
     }
@@ -185,7 +208,6 @@ public class Bot extends TelegramLongPollingBot {
 
     private void createNewUser (Long chatId) {
 
-        resultsForUser.put(messageStrings.POINTS, 0);
         resultsForUser.put(messageStrings.BUTTON_1, 0);
         resultsForUser.put(messageStrings.BUTTON_2, 0);
         resultsForUser.put(messageStrings.BUTTON_3, 0);
@@ -195,7 +217,9 @@ public class Bot extends TelegramLongPollingBot {
         resultsForUser.put(messageStrings.BUTTON_7, 0);
         resultsForUser.put(messageStrings.BUTTON_8, 0);
 
+        resultsForUser.put(messageStrings.POINTS_FOR_USER, 0);
         resultsForUser.put(messageStrings.NUMBER_OF_QUESTION, 0);
+
         resultsForUser.put(messageStrings.IF_FIRST_MESSAGE, true);
 
         users.put(chatId, resultsForUser);

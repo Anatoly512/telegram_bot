@@ -38,19 +38,19 @@ public class Messages {
     public final String SPHERE_8_HEALTH = "Сфера 8   Здоровье.   Как хорошо вы заботитесь о своем здоровье, ваше питание, физические нагрузки, насколько вы довольны своим физическим состоянием и здоровьем.";
     public final int AMOUNT_OF_SPHERES = 8;
 
-    public final String POINTS_1 = "1 - хуже некуда \n";
-    public final String POINTS_2 = "2 - очень плохо \n";
-    public final String POINTS_3 = "3 - плохо \n";
-    public final String POINTS_4 = "4 - так себе \n";
-    public final String POINTS_5 = "5 - хорошо \n";
-    public final String POINTS_6 = "6 - очень хорошо \n";
-    public final String POINTS_7 = "7 - замечательно \n";
-    public final String POINTS_8 = "8 - отлично \n";
-    public final String POINTS_9 = "9 - прекрасно \n";
-    public final String POINTS_10 = "10 - супер! \n";
+    public final String POINTS_1 = "1 - хуже некуда  \uD83D\uDE21  \n";
+    public final String POINTS_2 = "2 - очень плохо  \uD83D\uDE2C  \n";
+    public final String POINTS_3 = "3 - плохо  \uD83D\uDE41  \n";
+    public final String POINTS_4 = "4 - так себе  \uD83D\uDE10  \n";
+    public final String POINTS_5 = "5 - хорошо  \uD83D\uDE0B  \n";
+    public final String POINTS_6 = "6 - очень хорошо  \uD83D\uDE0E  \n";
+    public final String POINTS_7 = "7 - замечательно  \uD83D\uDE01  \n";
+    public final String POINTS_8 = "8 - отлично  \uD83D\uDE1D  \n";
+    public final String POINTS_9 = "9 - прекрасно  \uD83E\uDD2A  \n";
+    public final String POINTS_10 = "10 - супер!  \uD83D\uDE07  \n";
 
     public final String IF_FIRST_MESSAGE = "if first message";
-    public final String POINTS = "points";
+    public final String POINTS_FOR_USER = "points";
     public final String NUMBER_OF_QUESTION = "number of question";
 
 }
