@@ -267,6 +267,8 @@ public class Bot extends TelegramLongPollingBot {
 
         while (trigger) {
             trigger = false;
+            if (nums[i] == 0) nums[i] = 1;
+
             minSpheres.add(nums[i]);    //   Заносится минимальный элемент в массиве (в коллекцию <minSpheres>)
 
             if (i == 0)    //  Массив закончился
