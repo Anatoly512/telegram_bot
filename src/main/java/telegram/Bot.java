@@ -181,17 +181,17 @@ public class Bot extends TelegramLongPollingBot {
         sendMsg(chatId, result);
 
 
+        //  Обнуление всех переменных  (нужно для начала опроса заново по желанию пользователя)
+
+        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);     //  Обнуление текущего номера вопроса (нужно для корректного подсчета сильных и слабых сфер)
+        users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);
+
+
         //  Вывод наименьших и наибольших значений развития сфер пользователя
         spheresMaxAndMinCalculate(chatId);
 
 
         //  Завершение опроса
-
-        //  Обнуление всех переменных  (нужно для начала опроса заново по желанию пользователя)
-
-        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);
-        users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);
-
 
         keyboardMarkupTwoButtons();   //  Переводим клавиатуру в изначальное состояние (на 2 кнопки -> "Старт" и "Помощь")
 
@@ -269,7 +269,40 @@ public class Bot extends TelegramLongPollingBot {
         System.out.println("Наименьшие элементы в коллекции  :  " + minSpheres);
 
 
-        //  Вывод на экран соответствующих ячеек (баскетов) из HashMap <resultsForUser>     //  поиск по ключам
+        //  Вывод на экран соответствующих ячеек из HashMap <resultsForUser>     //  поиск по ключам
+
+
+        //  Вывод сильных сфер
+
+        System.out.println("\nВаши сильные сферы : ");
+
+            Set<Map.Entry<String, Object>> entrySet = (users.get(chatId)).entrySet();
+
+            Object desiredObject = new Object();  //  что хотим найти
+            desiredObject = maxSpheres.get(0);    // <maxSpheres> сильные сферы
+
+            for (Map.Entry<String, Object> pair : entrySet) {
+                if (desiredObject.equals(pair.getValue())) {
+
+                    System.out.println("сильные сферы : " + pair.getKey());  // нашли наше значение и возвращаем  ключ
+
+                }
+            }
+
+
+        //  Вывод слабых сфер
+
+        System.out.println("\nВаши слабые сферы : ");
+
+        desiredObject = minSpheres.get(0);   //  <minSpheres>  слабые сферы
+
+        for (Map.Entry<String, Object> pair : entrySet) {
+            if (desiredObject.equals(pair.getValue())) {
+
+                System.out.println("слабые сферы : " + pair.getKey());  // нашли наше значение и возвращаем  ключ
+
+            }
+        }
 
 
 
