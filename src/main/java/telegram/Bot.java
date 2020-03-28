@@ -216,10 +216,61 @@ public class Bot extends TelegramLongPollingBot {
         //  Тестовая строка
         System.out.println("\nМассив значений баллов за вопросы :  " + Arrays.toString(nums));
 
+        List<Integer> maxSpheres = new ArrayList<>();
+        List<Integer> minSpheres = new ArrayList<>();
+
         CalculateSpheres calculateSpheres = new CalculateSpheres();
 
+        nums = calculateSpheres.calculateResults(nums);     //  <nums> теперь отсортированный массив  (по убыванию)
 
-        calculateSpheres.calculateResults(nums);       //  вычисление наименьших и наибольших значений развития сфер пользователя
+
+        //  Вычисление наибольших и наименьших значений (развития сфер пользователя)
+        //  и занесение результатов в коллекции <maxSpheres> и <minSpheres>
+
+        boolean trigger = true;
+        int i = 0;
+
+        do {
+            maxSpheres.add(nums[i]);      //   Заносится максимальный элемент в массиве  (в коллекцию <maxSpheres>)
+
+            if (i == nums.length-1)    //  Массив закончился
+                break;
+
+            if (!(nums[i] == (nums[i + 1])))    //  Если следующий элемент в массиве отличается, то выход из цикла
+              trigger = false;
+            else
+                i++;                            //  иначе заносим в коллекцию <maxSpheres> следующий элемент
+        }
+        while (trigger);
+
+
+        //  Тестовая строка
+        System.out.println("\n\nНаибольшие элементы в коллекции  :  " + maxSpheres);
+
+
+        trigger = true;
+        i = nums.length-1;
+
+        while (trigger) {
+            trigger = false;
+            minSpheres.add(nums[i]);    //   Заносится минимальный элемент в массиве (в коллекцию <minSpheres>)
+
+            if (i == 0)    //  Массив закончился
+            break;
+
+            if ((nums[i] == (nums[i - 1]))) {    //  Другая логика :  если предыдущий элемент такой же, то продолжаем заносить в коллекцию <minSpheres>
+                i--;
+                trigger = true;
+            }
+        }
+
+
+        //  Тестовая строка
+        System.out.println("Наименьшие элементы в коллекции  :  " + minSpheres);
+
+
+        //  Вывод на экран соответствующих ячеек (баскетов) из HashMap <resultsForUser>     //  поиск по ключам
+
 
 
     }
