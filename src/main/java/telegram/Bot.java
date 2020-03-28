@@ -202,6 +202,29 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
+    private void spheresMaxAndMinCalculate (Long chatId) {
+
+        int[] nums = new int[messageStrings.AMOUNT_OF_SPHERES];
+
+
+        for (int i = 0; i < messageStrings.AMOUNT_OF_SPHERES; i++) {   //  получаем массив nums, состоящий из значений в HashMap <resultsForUser>  (баллы за вопросы)
+
+            nums[i] = (int) (users.get(chatId)).get(String.valueOf(i + 1));        //  В HashMap <resultsForUser> нумерация вопросов начинается с 1
+
+        }
+
+        //  Тестовая строка
+        System.out.println("\nМассив значений баллов за вопросы :  " + Arrays.toString(nums));
+
+        CalculateSpheres calculateSpheres = new CalculateSpheres();
+
+
+        calculateSpheres.calculateResults(nums);       //  вычисление наименьших и наибольших значений развития сфер пользователя
+
+
+    }
+
+
     private void createNewUser (Long chatId) {
 
         resultsForUser.put(messageStrings.BUTTON_1, 0);
@@ -356,29 +379,6 @@ public class Bot extends TelegramLongPollingBot {
 
     }
 
-
-
-    private void spheresMaxAndMinCalculate (Long chatId) {
-
-        int[] nums = new int[messageStrings.AMOUNT_OF_SPHERES];
-
-
-        for (int i = 0; i < messageStrings.AMOUNT_OF_SPHERES; i++) {   //  получаем массив nums, состоящий из значений в HashMap <resultsForUser>  (баллы за вопросы)
-
-            nums[i] = (int) (users.get(chatId)).get(String.valueOf(i + 1));        //  В HashMap <resultsForUser> нумерация вопросов начинается с 1
-
-        }
-
-        //  Тестовая строка
-        System.out.println("\nМассив значений баллов за вопросы :  " + Arrays.toString(nums));
-
-        CalculateSpheres calculateSpheres = new CalculateSpheres();
-
-
-        calculateSpheres.calculateResults(nums);       //  вычисление наименьших и наибольших значений развития сфер пользователя
-
-
-    }
 
 
     @Override
