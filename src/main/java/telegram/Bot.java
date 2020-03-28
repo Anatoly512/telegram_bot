@@ -268,13 +268,26 @@ public class Bot extends TelegramLongPollingBot {
         //  Тестовая строка
         System.out.println("Наименьшие элементы в коллекции  :  " + minSpheres);
 
+        //  Готовится лист названий сфер для вывода пользователю подходящих для него сильных и слабых сфер
+        List<String> titleOfSpheres = new ArrayList<>();
+        titleOfSpheres.add(messageStrings.SPHERE_1_CAREER_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_2_FAMILY_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_3_WEALTH_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_4_ENVIROMENT_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_5_DEVELOPMENT_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_6_RECREATION_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_7_TRAVELS_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_8_HEALTH_TITLE);
 
         //  Вывод на экран соответствующих ячеек из HashMap <resultsForUser>     //  поиск по ключам
 
+        String stringSpheres = "";
 
         //  Вывод сильных сфер
 
-        System.out.println("\nВаши сильные сферы : ");
+        System.out.println("\nВаши сильные сферы  : ");
+
+        sendMsg(chatId, "\nВаши сильные сферы  : ");
 
             Set<Map.Entry<String, Object>> entrySet = (users.get(chatId)).entrySet();
 
@@ -284,7 +297,12 @@ public class Bot extends TelegramLongPollingBot {
             for (Map.Entry<String, Object> pair : entrySet) {
                 if (desiredObject.equals(pair.getValue())) {
 
-                    System.out.println("сильные сферы : " + pair.getKey());  // нашли наше значение и возвращаем  ключ
+                //    System.out.println("сильные сферы : " + pair.getKey());  // нашли наше значение и возвращаем ключ
+
+                    System.out.println("сильная сфера : " + titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 ));
+
+                    stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 );
+                    sendMsg(chatId, stringSpheres);
 
                 }
             }
@@ -292,14 +310,21 @@ public class Bot extends TelegramLongPollingBot {
 
         //  Вывод слабых сфер
 
-        System.out.println("\nВаши слабые сферы : ");
+        System.out.println("\nВаши слабые сферы  : ");
+
+        sendMsg(chatId, "\nВаши слабые сферы  : ");
 
         desiredObject = minSpheres.get(0);   //  <minSpheres>  слабые сферы
 
         for (Map.Entry<String, Object> pair : entrySet) {
             if (desiredObject.equals(pair.getValue())) {
 
-                System.out.println("слабые сферы : " + pair.getKey());  // нашли наше значение и возвращаем  ключ
+             //   System.out.println("слабые сферы : " + pair.getKey());  // нашли наше значение и возвращаем ключ
+
+                System.out.println("слабая сфера : " + titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 ));
+
+                stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 );
+                sendMsg(chatId, stringSpheres);
 
             }
         }

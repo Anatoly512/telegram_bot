@@ -39,6 +39,15 @@ public class Messages {
 
     public final int AMOUNT_OF_SPHERES = 8;
 
+    public final String SPHERE_1_CAREER_TITLE = "Карьера ";
+    public final String SPHERE_2_FAMILY_TITLE = "Семья ";
+    public final String SPHERE_3_WEALTH_TITLE = "Финансовое благополучие ";
+    public final String SPHERE_4_ENVIROMENT_TITLE = "Окружение ";
+    public final String SPHERE_5_DEVELOPMENT_TITLE = "Развитие ";
+    public final String SPHERE_6_RECREATION_TITLE = "Отдых ";
+    public final String SPHERE_7_TRAVELS_TITLE = "Путешествия ";
+    public final String SPHERE_8_HEALTH_TITLE = "Здоровье ";
+
     public final String POINTS_1 = "1 - хуже некуда  \uD83D\uDE21  \n";
     public final String POINTS_2 = "2 - очень плохо  \uD83D\uDE2C  \n";
     public final String POINTS_3 = "3 - плохо  \uD83D\uDE41  \n";
