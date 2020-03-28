@@ -7,10 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -183,10 +180,9 @@ public class Bot extends TelegramLongPollingBot {
         String result = messageStrings.RESULT + String.valueOf(points) + "%";
         sendMsg(chatId, result);
 
-        //  Вывод наименьших и наибольших значений развития сфер пользователя
-        //  ...
-        //  ...
 
+        //  Вывод наименьших и наибольших значений развития сфер пользователя
+        spheresMaxAndMinCalculate(chatId);
 
 
         //  Завершение опроса
@@ -357,6 +353,30 @@ public class Bot extends TelegramLongPollingBot {
 
         keyboard.add(row);
         keyboardMarkup.setKeyboard(keyboard);
+
+    }
+
+
+
+    private void spheresMaxAndMinCalculate (Long chatId) {
+
+        int[] nums = new int[messageStrings.AMOUNT_OF_SPHERES];
+
+
+        for (int i = 0; i < messageStrings.AMOUNT_OF_SPHERES; i++) {   //  получаем массив nums, состоящий из значений в HashMap <resultsForUser>  (баллы за вопросы)
+
+            nums[i] = (int) (users.get(chatId)).get(String.valueOf(i + 1));        //  В HashMap <resultsForUser> нумерация вопросов начинается с 1
+
+        }
+
+        //  Тестовая строка
+        System.out.println("\nМассив значений баллов за вопросы :  " + Arrays.toString(nums));
+
+        CalculateSpheres calculateSpheres = new CalculateSpheres();
+
+
+        calculateSpheres.calculateResults(nums);       //  вычисление наименьших и наибольших значений развития сфер пользователя
+
 
     }
 
