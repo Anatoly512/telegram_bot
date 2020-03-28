@@ -15,12 +15,11 @@ public class Bot extends TelegramLongPollingBot {
     String botToken = "904172873:AAG1PY5RZnAwAYFHB-McdI8ogWvjzcBNPto";
 
     Messages messageStrings = new Messages();
-    Long chatId;
 
     List<String> listOfQuestions = new ArrayList<>();
+    List<String> titleOfSpheres = new ArrayList<>();
 
     Map<Long, Map<String, Object>> users = new HashMap<>();   // общий список пользователей в формате :  [chatID пользователя] - [его результаты в виде HashMap]
-//    Map<String, Object> resultsForUser = new HashMap<>();    //  встроенная в HashMap <users> еще одна HashMap для записи результатов для каждого пользователя
 
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
@@ -36,6 +35,15 @@ public class Bot extends TelegramLongPollingBot {
         listOfQuestions.add(messageStrings.SPHERE_7_TRAVELS);
         listOfQuestions.add(messageStrings.SPHERE_8_HEALTH);
 
+        titleOfSpheres.add(messageStrings.SPHERE_1_CAREER_TITLE);       //  Готовится список названий сфер
+        titleOfSpheres.add(messageStrings.SPHERE_2_FAMILY_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_3_WEALTH_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_4_ENVIROMENT_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_5_DEVELOPMENT_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_6_RECREATION_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_7_TRAVELS_TITLE);
+        titleOfSpheres.add(messageStrings.SPHERE_8_HEALTH_TITLE);
+
     }
 
 
@@ -43,9 +51,10 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {            // update содержит сообщение от пользователя
 
         String message = update.getMessage().getText();
-        this.chatId = update.getMessage().getChatId();
 
-        synchronized (this.chatId) {
+        Long chatId  = update.getMessage().getChatId();
+
+        synchronized (chatId) {
 
             try {
                 //  Тестовая строка
@@ -57,7 +66,6 @@ public class Bot extends TelegramLongPollingBot {
                     createNewUser(chatId);      //  Создание новой записи (пользователя) в HashMap <users>
                 }
 
-
                 //  Если это самое первое сообщение от пользователя
                 if (message != null && update.getMessage().hasText()) {
                     if ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE)) {   //  проверяется переменная из вложенной HashMap <resultsForUser> для пользователя <chatId>
@@ -68,6 +76,7 @@ public class Bot extends TelegramLongPollingBot {
 
                         users.get(chatId).put(messageStrings.IF_FIRST_MESSAGE, false);    //  заносится во вложенную HashMap <resultsForUser> для пользователя <chatId>
 
+                        System.out.println("\nChat id  :  " + chatId + "\n" + update);
                     }
                 }
 
@@ -96,6 +105,7 @@ public class Bot extends TelegramLongPollingBot {
 
             } catch (TelegramApiException e) {
                 System.out.println("Ошибка при приеме сообщения от пользователя : " + e.toString());
+            } catch ( NullPointerException ignore) {
             } catch (Exception n) {
                 System.out.println("Ошибка неустановленной природы при приеме сообщения : " + n.toString());
             }
@@ -126,42 +136,45 @@ public class Bot extends TelegramLongPollingBot {
 
     private synchronized void questionAsk(Long chatId, int points) throws TelegramApiException {
 
-        //  начисление общих баллов за предыдущий ответ  (0 если вопрос первый)
+        synchronized (users) {
 
-        users.get(chatId).put(messageStrings.POINTS_FOR_USER, (int) (users.get(chatId)).get(messageStrings.POINTS_FOR_USER) + points);
+            //  начисление общих баллов за предыдущий ответ  (0 если вопрос первый)
 
+            users.get(chatId).put(messageStrings.POINTS_FOR_USER, (int) (users.get(chatId)).get(messageStrings.POINTS_FOR_USER) + points);
 
-        //  занесение балла именно за конкретный вопрос (номер <NUMBER_OF_QUESTION>) в соответствующее поле в HashMap <resultsForUser>
+            //  занесение балла именно за конкретный вопрос (номер <NUMBER_OF_QUESTION>) в соответствующее поле в HashMap <resultsForUser>
 
-        users.get(chatId).put( String.valueOf((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)),  points);
-
-
-        if ((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) >= messageStrings.AMOUNT_OF_SPHERES) {  //  Количество вопросов прописано в классе Messages, вместе со сферами
-            //  Окончание опроса
-            sendMsg(chatId, messageStrings.TEST_COMPLETE);
-
-            //  Запуск анализа результатов для пользователя <chatId>
-            analyseResults(chatId);
+            users.get(chatId).put(String.valueOf((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)), points);
         }
-        else
-            {
-            try {
-                //  Задается очередной вопрос
-                sendMsg(chatId, listOfQuestions.get((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)));
-            }
-            catch (IndexOutOfBoundsException e) {
-                System.out.println("Выход за границы массива : " + e.toString());
-            }
-            catch (Exception n) {
-                System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
-            }
 
+        synchronized (users) {
+
+            if ((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) >= messageStrings.AMOUNT_OF_SPHERES) {  //  Количество вопросов прописано в классе Messages, вместе со сферами
+                //  Окончание опроса
+                sendMsg(chatId, messageStrings.TEST_COMPLETE);
+
+                //  Запуск анализа результатов для пользователя <chatId>
+                analyseResults(chatId);
+            } else {
+                try {
+                    //  Задается очередной вопрос
+                    sendMsg(chatId, listOfQuestions.get((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)));
+                } catch (IndexOutOfBoundsException e) {
+                    System.out.println("Выход за границы массива : " + e.toString());
+                } catch (Exception n) {
+                    System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
+                }
+            }
+        }
 
             //  Готовим следующий вопрос для пользователя <chatId>
             //  Номер записывается в соответствующее поле в HashMap <resultsForUser>
 
-            users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, (int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) + 1);
-        }
+            synchronized (users) {
+
+                users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, (int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) + 1);
+            }
+
 
     }
 
@@ -185,9 +198,10 @@ public class Bot extends TelegramLongPollingBot {
 
         //  Обнуление всех переменных  (нужно для начала опроса заново по желанию пользователя)
 
-        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);       //  Обнуление текущего номера вопроса (нужно для корректного подсчета сильных и слабых сфер)
-        users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);
-
+        synchronized (users) {
+            users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);       //  Обнуление текущего номера вопроса (нужно для корректного подсчета сильных и слабых сфер)
+            users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);
+        }
 
         //  Вывод наименьших и наибольших значений развития сфер пользователя
         spheresMaxAndMinCalculate(chatId);
@@ -230,12 +244,21 @@ public class Bot extends TelegramLongPollingBot {
         //  Тестовая строка
         System.out.println("\nМассив значений баллов за вопросы :  " + Arrays.toString(nums));
 
-        List<Integer> maxSpheres = new ArrayList<>();
-        List<Integer> minSpheres = new ArrayList<>();
 
         CalculateSpheres calculateSpheres = new CalculateSpheres();
 
         nums = calculateSpheres.calculateResults(nums);     //  <nums> теперь отсортированный массив  (по убыванию)
+
+
+        spheresMaxAndMinCreateAndShow(nums, chatId);
+
+    }
+
+
+    private synchronized void spheresMaxAndMinCreateAndShow (int[] nums, Long chatId) {
+
+        List<Integer> maxSpheres = new ArrayList<>();
+        List<Integer> minSpheres = new ArrayList<>();
 
 
         //  Вычисление наибольших и наименьших значений (развития сфер пользователя)
@@ -251,7 +274,7 @@ public class Bot extends TelegramLongPollingBot {
                 break;
 
             if (!(nums[i] == (nums[i + 1])))    //  Если следующий элемент в массиве отличается, то выход из цикла
-              trigger = false;
+                trigger = false;
             else
                 i++;                            //  иначе заносим в коллекцию <maxSpheres> следующий элемент
         }
@@ -267,12 +290,13 @@ public class Bot extends TelegramLongPollingBot {
 
         while (trigger) {
             trigger = false;
-            if (nums[i] == 0) nums[i] = 1;
+
+            if (nums[i] == 0) nums[i] = 1;  //  Это чтобы избежать возможного будущего выхода за границы массива (если оставить 0)
 
             minSpheres.add(nums[i]);    //   Заносится минимальный элемент в массиве (в коллекцию <minSpheres>)
 
             if (i == 0)    //  Массив закончился
-            break;
+                break;
 
             if ((nums[i] == (nums[i - 1]))) {    //  Другая логика :  если предыдущий элемент такой же, то продолжаем заносить в коллекцию <minSpheres>
                 i--;
@@ -284,16 +308,6 @@ public class Bot extends TelegramLongPollingBot {
         //  Тестовая строка
         System.out.println("Наименьшие элементы в коллекции  :  " + minSpheres);
 
-        //  Готовится лист названий сфер для вывода пользователю подходящих для него сильных и слабых сфер
-        List<String> titleOfSpheres = new ArrayList<>();
-        titleOfSpheres.add(messageStrings.SPHERE_1_CAREER_TITLE);
-        titleOfSpheres.add(messageStrings.SPHERE_2_FAMILY_TITLE);
-        titleOfSpheres.add(messageStrings.SPHERE_3_WEALTH_TITLE);
-        titleOfSpheres.add(messageStrings.SPHERE_4_ENVIROMENT_TITLE);
-        titleOfSpheres.add(messageStrings.SPHERE_5_DEVELOPMENT_TITLE);
-        titleOfSpheres.add(messageStrings.SPHERE_6_RECREATION_TITLE);
-        titleOfSpheres.add(messageStrings.SPHERE_7_TRAVELS_TITLE);
-        titleOfSpheres.add(messageStrings.SPHERE_8_HEALTH_TITLE);
 
         //  Вывод на экран соответствующих ячеек из HashMap <resultsForUser>     //  поиск по ключам
 
@@ -305,25 +319,25 @@ public class Bot extends TelegramLongPollingBot {
 
         sendMsg(chatId, "\nВаши сильные сферы  : ");
 
-            Set<Map.Entry<String, Object>> entrySet = (users.get(chatId)).entrySet();
+        Set<Map.Entry<String, Object>> entrySet = (users.get(chatId)).entrySet();
 
-            Object desiredObject = new Object();  //  что хотим найти
-            desiredObject = maxSpheres.get(0);    // <maxSpheres> сильные сферы
+        Object desiredObject = new Object();  //  что хотим найти
+        desiredObject = maxSpheres.get(0);    // <maxSpheres> сильные сферы
 
-            for (Map.Entry<String, Object> pair : entrySet) {
-                if (desiredObject.equals(pair.getValue())) {
+        for (Map.Entry<String, Object> pair : entrySet) {
+            if (desiredObject.equals(pair.getValue())) {
 
                 //    System.out.println("сильные сферы : " + pair.getKey());  // нашли наше значение и возвращаем ключ
 
-                    System.out.println("сильная сфера : " + titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 ));
+                System.out.println("сильная сфера : " + titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 ));
 
-                    stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 );
-                    sendMsg(chatId, stringSpheres);
+                stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 );
+                sendMsg(chatId, stringSpheres);
 
-               //   ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE))
+                //   ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE))
 
-                }
             }
+        }
 
 
         //  Вывод слабых сфер
@@ -337,7 +351,7 @@ public class Bot extends TelegramLongPollingBot {
         for (Map.Entry<String, Object> pair : entrySet) {
             if (desiredObject.equals(pair.getValue())) {
 
-             //   System.out.println("слабые сферы : " + pair.getKey());  // нашли наше значение и возвращаем ключ
+                //   System.out.println("слабые сферы : " + pair.getKey());  // нашли наше значение и возвращаем ключ
 
                 System.out.println("слабая сфера : " + titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 ));
 
@@ -346,8 +360,6 @@ public class Bot extends TelegramLongPollingBot {
 
             }
         }
-
-
 
     }
 
