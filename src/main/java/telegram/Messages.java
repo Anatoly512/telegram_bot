@@ -36,6 +36,7 @@ public class Messages {
     public final String SPHERE_6_RECREATION = "Сфера 6   Отдых.   Как вы проводите своё свободное время, как вы сами оцениваете свой отдых и его качество. Хотите ли вы что-то улучшить, или считаете что близки к идеалу.";
     public final String SPHERE_7_TRAVELS = "Сфера 7   Путешествия.   Путешествуете ли вы, пробуете ли что-то новое. Как вы оцениваете ваши путешествия, нравятся ли они вам, или может хотите что-то изменить.";
     public final String SPHERE_8_HEALTH = "Сфера 8   Здоровье.   Как хорошо вы заботитесь о своем здоровье, ваше питание, физические нагрузки, насколько вы довольны своим физическим состоянием и здоровьем.";
+    public final int AMOUNT_OF_SPHERES = 8;
 
     public final String POINTS_1 = "1 - хуже некуда \n";
     public final String POINTS_2 = "2 - очень плохо \n";
@@ -47,5 +48,9 @@ public class Messages {
     public final String POINTS_8 = "8 - отлично \n";
     public final String POINTS_9 = "9 - прекрасно \n";
     public final String POINTS_10 = "10 - супер! \n";
+
+    public final String IF_FIRST_MESSAGE = "if first message";
+    public final String POINTS = "points";
+    public final String NUMBER_OF_QUESTION = "number of question";
 
 }
