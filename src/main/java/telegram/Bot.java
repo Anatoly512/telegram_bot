@@ -7,8 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -18,12 +17,15 @@ public class Bot extends TelegramLongPollingBot {
     Long chatId;
 
     Messages messageStrings = new Messages();
-    boolean ifFirstMessage = true;
+    boolean ifFirstMessage = true;   //  можно убрать
 
-    int numberOfQuestion = 0;
-    int pointsForUser = 0;
+    Integer numberOfQuestion = 0;
+    Integer pointsForUser = 0;
 
     List<String> listOfQuestions = new ArrayList<>();
+
+    Map<Long, Map<String, Object>> users = new HashMap<>();
+    Map<String, Object> resultsForUser = new HashMap<>();
 
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
@@ -38,6 +40,7 @@ public class Bot extends TelegramLongPollingBot {
         listOfQuestions.add(messageStrings.SPHERE_6_RECREATION);
         listOfQuestions.add(messageStrings.SPHERE_7_TRAVELS);
         listOfQuestions.add(messageStrings.SPHERE_8_HEALTH);
+
     }
 
 
@@ -52,14 +55,25 @@ public class Bot extends TelegramLongPollingBot {
             System.out.println("\nChat id  :  " + chatId + "\n" + update);
 
 
+            if (!users.containsKey(chatId)) {     //  Создание новой записи (пользователя) в HashMap users
+
+                createNewUser(chatId);
+
+            }
+
             //  Если это самое первое сообщение от пользователя
             if (message != null && update.getMessage().hasText()) {
-                if (ifFirstMessage) {
+
+                if ((boolean) (users.get(chatId)).get("if first message")) {
+
                     sendMsg(chatId, messageStrings.SMILE);
                     sendMsg(chatId, messageStrings.THANK_YOU);
                     sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
 
-                    ifFirstMessage = false;
+             //       users.put(users.get(chatId)), ("ifFirstMessage", false) );
+
+                    //  Тестовая строка
+                    System.out.println("\nПеременная if first message  :  " + (users.get(chatId)).get("if first message") );
                 }
             }
 
@@ -79,16 +93,11 @@ public class Bot extends TelegramLongPollingBot {
 
                 sendMsg(chatId, messageStrings.START);
 
-                wheelCreate(chatId);   //  Запуск метода создания "колеса" для пользователя <chatId>
-                //  Это вариант для логики сообщений с собственной прикрепленной клавиатурой
-
                 //  Есть две логики создания "колеса" :
                 //  1)  Посылать сообщения с собственной прикрепленной клавиатурой
                 //  2)  Использовать одну клавиатуру для всех   <Пока что основной вариант, как самый простой и рациональный>
 
-
                 questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
-
 
             }
 
@@ -243,12 +252,6 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private void wheelCreate(Long chatId) {     //  Пока что тестовый метод   (для сообщений с собственной прикрепленной клавиатурой)
-
-        System.out.println("\nСоздаем колесо жизненного баланса для пользователя  chatId :  " + chatId);
-
-    }
-
 
     private void questionAsk(Long chatId, int points) throws TelegramApiException {
 
@@ -300,6 +303,30 @@ public class Bot extends TelegramLongPollingBot {
         sendMsg(chatId, messageStrings.SMILE);
         sendMsg(chatId, messageStrings.REPEAT);    //  Пробуем запуск бота с самого начала
 
+
+    }
+
+
+    private void createNewUser (Long chatId) {
+
+        resultsForUser.put("points", 0);
+        resultsForUser.put(messageStrings.BUTTON_1, 0);
+        resultsForUser.put(messageStrings.BUTTON_2, 0);
+        resultsForUser.put(messageStrings.BUTTON_3, 0);
+        resultsForUser.put(messageStrings.BUTTON_4, 0);
+        resultsForUser.put(messageStrings.BUTTON_5, 0);
+        resultsForUser.put(messageStrings.BUTTON_6, 0);
+        resultsForUser.put(messageStrings.BUTTON_7, 0);
+        resultsForUser.put(messageStrings.BUTTON_8, 0);
+
+        resultsForUser.put("number of question", 0);
+        resultsForUser.put("if first message", true);
+
+        users.put(chatId, resultsForUser);
+
+        //  Тестовые строки
+        System.out.println("\nСоздан новый пользователь  :  " + resultsForUser);
+        System.out.println("\nОбщий пул пользователей  :  " + users);
 
     }
 
