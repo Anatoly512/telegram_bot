@@ -183,7 +183,7 @@ public class Bot extends TelegramLongPollingBot {
 
         //  Обнуление всех переменных  (нужно для начала опроса заново по желанию пользователя)
 
-        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);     //  Обнуление текущего номера вопроса (нужно для корректного подсчета сильных и слабых сфер)
+        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);       //  Обнуление текущего номера вопроса (нужно для корректного подсчета сильных и слабых сфер)
         users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);
 
 
@@ -303,6 +303,8 @@ public class Bot extends TelegramLongPollingBot {
 
                     stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1 );
                     sendMsg(chatId, stringSpheres);
+
+               //   ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE))
 
                 }
             }
