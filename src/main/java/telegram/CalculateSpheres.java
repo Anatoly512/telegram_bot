@@ -74,7 +74,7 @@ public class CalculateSpheres {
 
 
 
-    private void displayArray (int ...array) {
+    private synchronized void displayArray (int ...array) {
 
         int i = 0;
 

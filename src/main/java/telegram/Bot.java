@@ -185,7 +185,6 @@ public class Bot extends TelegramLongPollingBot {
         //  Тестовая строка
         System.out.println("\nПользователь chatId : " + chatId + " -> РЕЗУЛЬТАТЫ  :  " + users.get(chatId));
 
-
         int points = (int) (users.get(chatId)).get(messageStrings.POINTS_FOR_USER);
 
         points = points % 80;
@@ -231,7 +230,7 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
 
-    }
+}
 
 
     private synchronized void spheresMaxAndMinCalculate(Long chatId) {
