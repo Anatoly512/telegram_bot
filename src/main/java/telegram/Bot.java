@@ -75,12 +75,13 @@ public class Bot extends TelegramLongPollingBot {
                     if (message != null && update.getMessage().hasText()) {
                         if ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE)) {   //  проверяется переменная из вложенной HashMap <resultsForUser> для пользователя <chatId>
 
-                            sendMsg(chatId, messageStrings.SMILE);
+                            sendMsg(chatId, messageStrings.SMILE);                     //  Здесь идет блок, если подключился новый пользователь
                             sendMsg(chatId, messageStrings.THANK_YOU);
                             sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
 
                             users.get(chatId).put(messageStrings.IF_FIRST_MESSAGE, false);    //  заносится во вложенную HashMap <resultsForUser> для пользователя <chatId>
 
+                            message = "";    //  После разрыва связи нужно обнулить сообщение от пользователя, иначе будут обрабатываться предыдущие запросы
                             System.out.println("\nChat id  :  " + chatId + "\n" + update);
                         }
                     }
@@ -101,7 +102,7 @@ public class Bot extends TelegramLongPollingBot {
 
                         sendMsg(chatId, messageStrings.START);
 
-                        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);                //  Установить номер вопроса на 0
+                        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);      //  Установить номер вопроса на 0
                         users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);        //  Установить общие баллы за вопросы на 0
 
                         questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
@@ -180,7 +181,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
 
-        //  Готовим следующий вопрос для пользователя <chatId>            //  Номер записывается в соответствующее поле в HashMap <resultsForUser>
+        //  Готовим следующий вопрос для пользователя <chatId>             //  Номер записывается в соответствующее поле в HashMap <resultsForUser>
 
         users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, (int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) + 1);
 
@@ -270,6 +271,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
+
     private synchronized void spheresMaxAndMinCreateAndShow(int[] nums, Long chatId) {
 
         List<Integer> maxSpheres = new ArrayList<>();
@@ -356,7 +358,7 @@ public class Bot extends TelegramLongPollingBot {
                 stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1);
                 sendMsg(chatId, stringSpheres);
 
-                //   ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE))
+
 
             }
         }
@@ -390,6 +392,7 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 }
+
 
     private synchronized void createNewUser(Long chatId) {
 
@@ -533,7 +536,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private synchronized void keyboardMarkupTwoButtons() {     //  Настройка пользовательской клавиатуры на 2 кнопки ("Старт" и "Помощь")
+    private synchronized void keyboardMarkupTwoButtons() {        //  Настройка пользовательской клавиатуры на 2 кнопки ("Старт" и "Помощь")
 
         List<KeyboardRow> keyboard = new ArrayList<>();
         keyboardMarkup.setResizeKeyboard(true);
