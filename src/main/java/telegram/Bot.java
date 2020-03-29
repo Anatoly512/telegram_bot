@@ -24,7 +24,7 @@ public class Bot extends TelegramLongPollingBot {
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
     Bot() {
-        keyboardMarkupTwoButtons();     //  Настройка в конструкторе пользовательской клавиатуры
+        keyboardMarkupTwoButtons();     //  Настройка в конструкторе пользовательской клавиатуры (на 2 кнопки "Старт" и "Помощь")
 
         listOfQuestions.add(messageStrings.SPHERE_1_CAREER);        //  Создание списка вопросов
         listOfQuestions.add(messageStrings.SPHERE_2_FAMILY);
@@ -66,6 +66,9 @@ public class Bot extends TelegramLongPollingBot {
                     if (!users.containsKey(chatId)) {     //  Если такого <chatId> еще нет в HashMap <users>
 
                         createNewUser(chatId);      //  Создание новой записи (пользователя) в HashMap <users>
+
+                        keyboardMarkupTwoButtons();   //  Если пользователь новый, то ему нужна клавиатура на 2 кнопки ("Старт" и "Помощь")
+
                     }
 
                     //  Если это самое первое сообщение от пользователя
@@ -145,7 +148,7 @@ public class Bot extends TelegramLongPollingBot {
 
         //  занесение балла именно за конкретный вопрос (номер <NUMBER_OF_QUESTION>) в соответствующее поле в HashMap <resultsForUser>
 
-        users.get(chatId).put(String.valueOf((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)), points);
+        users.get(chatId).put((String.valueOf((int) ((users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)))), points);
 
 
         if ((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) >= messageStrings.AMOUNT_OF_SPHERES) {  //  Количество вопросов прописано в классе Messages, вместе со сферами
@@ -154,10 +157,18 @@ public class Bot extends TelegramLongPollingBot {
 
             //  Запуск анализа результатов для пользователя <chatId>
             analyseResults(chatId);
-        } else {
+        }
+        else {
             try {
+
+                if ((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) != 0) {      //  Если это вопрос не первый
+
+                    keyboardMarkup.setKeyboard(keyboardMarkupNew());      //  Установка клавиатуры для ответов на 10 кнопок
+                }
+
                 //  Задается очередной вопрос
                 sendMsg(chatId, listOfQuestions.get((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)));
+
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Выход за границы массива : " + e.toString());
             } catch (Exception n) {
@@ -166,9 +177,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
 
-        //  Готовим следующий вопрос для пользователя <chatId>
-        //  Номер записывается в соответствующее поле в HashMap <resultsForUser>
-
+        //  Готовим следующий вопрос для пользователя <chatId>            //  Номер записывается в соответствующее поле в HashMap <resultsForUser>
 
         users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, (int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) + 1);
 
@@ -291,13 +300,19 @@ public class Bot extends TelegramLongPollingBot {
         trigger = true;
         i = nums.length - 1;
 
+        boolean triggerIfZero = false;
+
         while (trigger) {
             trigger = false;
 
-            if (nums[i] == 0)
+            if (nums[i] == 0) {
                 nums[i] = 1;  //  Это чтобы избежать возможного будущего выхода за границы массива (если оставить 0)
+                i--;
+                trigger = true;    //  В массиве не должно быть нулей  (такого варианта ответов не предусмотрено логикой программы)
+                triggerIfZero = true;
+            }
 
-            minSpheres.add(nums[i]);    //   Заносится минимальный элемент в массиве (в коллекцию <minSpheres>)
+            if (nums[i] != 0) minSpheres.add(nums[i]);    //   Заносится минимальный элемент в массиве (в коллекцию <minSpheres>)
 
             if (i == 0)    //  Массив закончился
                 break;
@@ -346,30 +361,32 @@ public class Bot extends TelegramLongPollingBot {
 
         //  Вывод слабых сфер
 
+        if (!triggerIfZero) {
+
         System.out.println("\nВаши слабые сферы  : ");
 
         sendMsg(chatId, "\nВаши слабые сферы  : ");
 
         desiredObject = minSpheres.get(0);   //  <minSpheres>  слабые сферы
 
-        for (Map.Entry<String, Object> pair : entrySet) {
-            if (desiredObject.equals(pair.getValue())) {
+        if (desiredObject != null) {
 
-                //   System.out.println("слабые сферы : " + pair.getKey());  // нашли наше значение и возвращаем ключ
+            for (Map.Entry<String, Object> pair : entrySet) {
+                if (desiredObject.equals(pair.getValue())) {
 
-                System.out.println("слабая сфера : " + titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1));
+                    //   System.out.println("слабые сферы : " + pair.getKey());  // нашли наше значение и возвращаем ключ
 
-                stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1);
-                sendMsg(chatId, stringSpheres);
+                    System.out.println("слабая сфера : " + titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1));
+
+                    stringSpheres = titleOfSpheres.get((int) Integer.parseInt(pair.getKey()) - 1);
+                    sendMsg(chatId, stringSpheres);
 
 
-                //  Тестовая строка
-                System.out.println("\nОбщий пул пользователей (после вывода результатов) :  " + users);
-
+                }
             }
         }
     }
-
+}
 
     private synchronized void createNewUser(Long chatId) {
 

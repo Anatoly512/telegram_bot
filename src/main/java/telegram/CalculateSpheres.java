@@ -57,6 +57,7 @@ public class CalculateSpheres {
         while (trigger) {
             trigger = false;
             for (int i = 0; i < (array.length-1); i++) {
+
                 if (arraySort[i] < arraySort[i + 1]) {
                     n = arraySort[i];
                     arraySort[i] = arraySort[i + 1];
