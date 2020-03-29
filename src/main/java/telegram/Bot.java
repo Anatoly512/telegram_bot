@@ -52,70 +52,70 @@ public class Bot extends TelegramLongPollingBot {
 
         synchronized (update) {
 
-        String message = update.getMessage().getText();
+            String message = update.getMessage().getText();
 
-        Long chatId = update.getMessage().getChatId();
+            Long chatId = update.getMessage().getChatId();
 
-        synchronized (users) {
+            synchronized (users) {
 
-        try {
-            //  Тестовая строка
-            System.out.println("\nChat id  :  " + chatId + "\n" + update);
-
-
-            if (!users.containsKey(chatId)) {     //  Если такого <chatId> еще нет в HashMap <users>
-
-                createNewUser(chatId);      //  Создание новой записи (пользователя) в HashMap <users>
-            }
-
-            //  Если это самое первое сообщение от пользователя
-            if (message != null && update.getMessage().hasText()) {
-                if ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE)) {   //  проверяется переменная из вложенной HashMap <resultsForUser> для пользователя <chatId>
-
-                    sendMsg(chatId, messageStrings.SMILE);
-                    sendMsg(chatId, messageStrings.THANK_YOU);
-                    sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
-
-                    users.get(chatId).put(messageStrings.IF_FIRST_MESSAGE, false);    //  заносится во вложенную HashMap <resultsForUser> для пользователя <chatId>
-
+                try {
+                    //  Тестовая строка
                     System.out.println("\nChat id  :  " + chatId + "\n" + update);
+
+
+                    if (!users.containsKey(chatId)) {     //  Если такого <chatId> еще нет в HashMap <users>
+
+                        createNewUser(chatId);      //  Создание новой записи (пользователя) в HashMap <users>
+                    }
+
+                    //  Если это самое первое сообщение от пользователя
+                    if (message != null && update.getMessage().hasText()) {
+                        if ((boolean) (users.get(chatId)).get(messageStrings.IF_FIRST_MESSAGE)) {   //  проверяется переменная из вложенной HashMap <resultsForUser> для пользователя <chatId>
+
+                            sendMsg(chatId, messageStrings.SMILE);
+                            sendMsg(chatId, messageStrings.THANK_YOU);
+                            sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
+
+                            users.get(chatId).put(messageStrings.IF_FIRST_MESSAGE, false);    //  заносится во вложенную HashMap <resultsForUser> для пользователя <chatId>
+
+                            System.out.println("\nChat id  :  " + chatId + "\n" + update);
+                        }
+                    }
+
+
+                    if (message.equals("/start")) {      //  Возможность печатать команду с клавиатуры
+                        sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
+                    }
+
+                    if (message.equals("/help") || (message.equals(messageStrings.BUTTON_2_HELP))) {
+                        sendMsg(chatId, messageStrings.HELP);
+                    }
+
+
+                    if (message.equals(messageStrings.BUTTON_1_CREATE_WHEEL)) {      //  Самое начало создания колеса
+
+                        keyboardMarkup.setKeyboard(keyboardMarkupNew());      //  Установка клавиатуры для ответов на 10 кнопок
+
+                        sendMsg(chatId, messageStrings.START);
+
+                        questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
+
+                    }
+
+                    createWheel(message, chatId);     //  Составление колеса жизненного баланса  (начисление баллов за ответ)
+
+
+                } catch (TelegramApiException e) {
+                    System.out.println("Ошибка при приеме сообщения от пользователя : " + e.toString());
+                } catch (NullPointerException ignore) {
+                } catch (Exception n) {
+                    System.out.println("Ошибка неустановленной природы при приеме сообщения : " + n.toString());
                 }
-            }
-
-
-            if (message.equals("/start")) {      //  Возможность печатать команду с клавиатуры
-                sendMsg(chatId, messageStrings.GREETENG_MESSAGE);
-            }
-
-            if (message.equals("/help") || (message.equals(messageStrings.BUTTON_2_HELP))) {
-                sendMsg(chatId, messageStrings.HELP);
-            }
-
-
-            if (message.equals(messageStrings.BUTTON_1_CREATE_WHEEL)) {      //  Самое начало создания колеса
-
-                keyboardMarkup.setKeyboard(keyboardMarkupNew());      //  Установка клавиатуры для ответов на 10 кнопок
-
-                sendMsg(chatId, messageStrings.START);
-
-                questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
 
             }
-
-            createWheel(message, chatId);     //  Составление колеса жизненного баланса  (начисление баллов за ответ)
-
-
-        } catch (TelegramApiException e) {
-            System.out.println("Ошибка при приеме сообщения от пользователя : " + e.toString());
-        } catch (NullPointerException ignore) {
-        } catch (Exception n) {
-            System.out.println("Ошибка неустановленной природы при приеме сообщения : " + n.toString());
         }
 
-      }
-   }
-
-}
+    }
 
     public synchronized void sendMsg(Long chatId, String messageString) {
         SendMessage sendMessage = new SendMessage();
@@ -139,48 +139,45 @@ public class Bot extends TelegramLongPollingBot {
 
         synchronized (users) {
 
-            //  начисление общих баллов за предыдущий ответ  (0 если вопрос первый)
+        //  начисление общих баллов за предыдущий ответ  (0 если вопрос первый)
 
-            users.get(chatId).put(messageStrings.POINTS_FOR_USER, (int) (users.get(chatId)).get(messageStrings.POINTS_FOR_USER) + points);
+        users.get(chatId).put(messageStrings.POINTS_FOR_USER, (int) (users.get(chatId)).get(messageStrings.POINTS_FOR_USER) + points);
 
-            //  занесение балла именно за конкретный вопрос (номер <NUMBER_OF_QUESTION>) в соответствующее поле в HashMap <resultsForUser>
+        //  занесение балла именно за конкретный вопрос (номер <NUMBER_OF_QUESTION>) в соответствующее поле в HashMap <resultsForUser>
 
-            users.get(chatId).put(String.valueOf((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)), points);
-        }
+        users.get(chatId).put(String.valueOf((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)), points);
 
-        synchronized (users) {
 
-            if ((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) >= messageStrings.AMOUNT_OF_SPHERES) {  //  Количество вопросов прописано в классе Messages, вместе со сферами
-                //  Окончание опроса
-                sendMsg(chatId, messageStrings.TEST_COMPLETE);
+        if ((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) >= messageStrings.AMOUNT_OF_SPHERES) {  //  Количество вопросов прописано в классе Messages, вместе со сферами
+            //  Окончание опроса
+            sendMsg(chatId, messageStrings.TEST_COMPLETE);
 
-                //  Запуск анализа результатов для пользователя <chatId>
-                analyseResults(chatId);
-            } else {
-                try {
-                    //  Задается очередной вопрос
-                    sendMsg(chatId, listOfQuestions.get((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)));
-                } catch (IndexOutOfBoundsException e) {
-                    System.out.println("Выход за границы массива : " + e.toString());
-                } catch (Exception n) {
-                    System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
-                }
+            //  Запуск анализа результатов для пользователя <chatId>
+            analyseResults(chatId);
+        } else {
+            try {
+                //  Задается очередной вопрос
+                sendMsg(chatId, listOfQuestions.get((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)));
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Выход за границы массива : " + e.toString());
+            } catch (Exception n) {
+                System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
             }
         }
+
 
         //  Готовим следующий вопрос для пользователя <chatId>
         //  Номер записывается в соответствующее поле в HashMap <resultsForUser>
 
-        synchronized (users) {
 
-            users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, (int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) + 1);
+        users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, (int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION) + 1);
 
-            //  Тестовая строка
-            System.out.println("\nОбщий пул пользователей  (новый вопрос подготовлен) :  " + users);
-        }
-
-
+        //  Тестовая строка
+        System.out.println("\nОбщий пул пользователей  (новый вопрос подготовлен) :  " + users);
     }
+
+
+}
 
 
     private synchronized void analyseResults(Long chatId) {
