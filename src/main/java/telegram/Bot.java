@@ -102,8 +102,9 @@ public class Bot extends TelegramLongPollingBot {
 
                         sendMsg(chatId, messageStrings.START);
 
+                        //  Если был обрав связи, то нужно еще раз обнулить основные переменные
                         users.get(chatId).put(messageStrings.NUMBER_OF_QUESTION, 0);      //  Установить номер вопроса на 0
-                        users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);        //  Установить общие баллы за вопросы на 0
+                        users.get(chatId).put(messageStrings.POINTS_FOR_USER, 0);         //  Установить общие баллы за вопросы на 0
 
                         questionAsk(chatId, 0);   //  Так как это первый вопрос, то и баллы за предыдущий ответ пока не начислены
 
