@@ -50,9 +50,6 @@ public class Main {
         System.out.println("\nBot name :  " + myBot.getBotUsername());
         System.out.println("Bot token :  " + myBot.getBotToken());
 
-        System.out.println("\nWebhook : " + myBot.getWebhookInfo());
-        System.out.println(myBot.getMe());
-
 
         System.out.println("\nПодключитесь к боту Telegram  " + myBot.getBotUsername() + "  и напишите ему что-нибудь (например, просто отправьте смайлик) !");
 
