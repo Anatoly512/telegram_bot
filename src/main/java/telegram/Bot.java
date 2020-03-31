@@ -233,9 +233,9 @@ public class Bot extends TelegramLongPollingBot {
 
 
         //  Сохранение результатов в файл
-        ResultsSaver resultsSaver = new ResultsSaver();
+        ResultsJsonSaver resultsJsonSaver = new ResultsJsonSaver();
         try {
-            resultsSaver.saveResults(chatId, users.get(chatId));     //  метод параметризирован, 2-й параметр может быть любым (записывается в файл)
+            resultsJsonSaver.saveResults(chatId, users.get(chatId));     //  метод параметризирован, 2-й параметр может быть любым (записывается в файл)
         } catch (IOException e) {
             System.out.println("\nОшибка записи в файл :  " + e.toString());
         }
@@ -442,9 +442,9 @@ public class Bot extends TelegramLongPollingBot {
         sendMsg(chatId, "Увеличте изображение кликнув по нему мышкой!");
 
 
-        //  Просмотр результатов в Java-машине (JVM)
-        ViewerResults viewerResults = new ViewerResults("Results");
-        viewerResults.showResults();
+    //  Просмотр результатов в Java-машине (JVM)
+    //  ViewerResults viewerResults = new ViewerResults("Results");
+    //  viewerResults.showResults();
 
 
 }

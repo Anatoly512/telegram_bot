@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-public class ResultsSaver {
+public class ResultsJsonSaver {
 
 
     public <S, T> void saveResults(Long chatID, Map<S, T> resultsOfUser) throws IOException {
