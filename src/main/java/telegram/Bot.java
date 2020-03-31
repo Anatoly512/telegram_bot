@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Bot extends TelegramLongPollingBot {
@@ -228,11 +229,23 @@ public class Bot extends TelegramLongPollingBot {
         sendMsg(chatId, messageStrings.SMILE);
         sendMsg(chatId, messageStrings.REPEAT);    //  Начинаем запуск бота с самого начала
 
-        //  Удаление юзера из HashMap
+
+        //  Сохранение результатов в файл
+        ResultsSaver resultsSaver = new ResultsSaver();
+        try {
+            resultsSaver.saveResults(chatId, users.get(chatId));     //  метод параметризирован, 2-й параметр может быть любым (записывается в файл)
+        } catch (IOException e) {
+            System.out.println("\nОшибка записи в файл :  " + e.toString());
+        }
+
+
+/*  Можно сэкономить производительность, и просто сбросить на 0 основные переменные в HashMap <resultsForUser>
+
+        //  Удаление юзера из HashMap      //   В принципе, это необязательно, сброс основных переменных в HashMap <resultsForUser> проще и быстрее)
 
         synchronized (users) {
             try {
-                users.remove(chatId);
+         //       users.remove(chatId);
 
                 System.out.println("\nПользователь с chatId :  " + chatId + "  завершил опрос и был удален из пула пользователей!");
 
@@ -243,6 +256,9 @@ public class Bot extends TelegramLongPollingBot {
                 System.out.println("Ошибка при удалении объекта из HashMap :  " + e.toString());
             }
         }
+
+*/
+
 
 }
 
@@ -392,7 +408,13 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
     }
+        showResults(maxSpheres, minSpheres);
 }
+
+
+    private synchronized void showResults (List<Integer> maxSpheres, List<Integer> minSpheres) {
+
+    }
 
 
     private synchronized void createNewUser(Long chatId) {
