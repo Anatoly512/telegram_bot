@@ -1,13 +1,13 @@
 package telegram;
 
-import java.io.*;
-
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
-public class ImageResultsCreate {
+import java.io.File;
+
+public class ImageCreate {
 
     public void fileImageCreate(Long chatID) throws Exception {
 

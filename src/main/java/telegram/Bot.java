@@ -410,7 +410,7 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-        ImageResultsCreate image = new ImageResultsCreate();
+        ImageCreate image = new ImageCreate();
         try {
             image.fileImageCreate(chatId);
         } catch (Exception e) {
