@@ -63,4 +63,9 @@ public class Messages {
     public final String POINTS_FOR_USER = "points";
     public final String NUMBER_OF_QUESTION = "number of question";
 
+
+    public final String PATH_TO_FILES = "src/main/java/telegram/user_results/user_";
+    public final String JPEG_IMAGE_FILE = "_results.jpeg";
+    public final String JSON_FILE = ".json";
+
 }

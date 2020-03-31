@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class Bot extends TelegramLongPollingBot {
@@ -236,7 +235,7 @@ public class Bot extends TelegramLongPollingBot {
         ResultsJsonSaver resultsJsonSaver = new ResultsJsonSaver();
         try {
             resultsJsonSaver.saveResults(chatId, users.get(chatId));     //  метод параметризирован, 2-й параметр может быть любым (записывается в файл)
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("\nОшибка записи в файл :  " + e.toString());
         }
 
@@ -244,7 +243,7 @@ public class Bot extends TelegramLongPollingBot {
 
 /*  Можно сэкономить производительность, и просто сбросить на (0) основные переменные в HashMap <resultsForUser>
 
-        //  Удаление юзера из HashMap      //   В принципе, это необязательно, сброс основных переменных в HashMap <resultsForUser> проще и быстрее)
+        //  Удаление юзера из HashMap      //   В принципе, это необязательно, сброс основных переменных в HashMap <resultsForUser> проще и быстрее
 
         synchronized (users) {
             try {
@@ -379,7 +378,6 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(chatId, stringSpheres);
 
 
-
             }
         }
 
@@ -421,21 +419,20 @@ public class Bot extends TelegramLongPollingBot {
         ImageCreate image = new ImageCreate();
 
         try {
-            image.fileImageCreate(chatId);     //  Создание файла-изображения с круговой диаграммой
+            image.fileImageCreate(chatId, titleOfSpheres, users.get(chatId));        //  Создание файла-изображения с круговой диаграммой
         }
         catch (Exception e) {
-            System.out.println("\nПроизошла ошибка во время создания и записи файла-изображения : " + e.toString());
+            System.out.println("\nПроизошла ошибка во время создания файла-изображения : " + e.toString());
         }
-
 
 
         SendPhoto sendPhoto = new SendPhoto().setChatId(chatId);   //  Вывод изображения с результатами пользователю
 
         try {
-            sendPhoto.setPhoto(new File("src/main/java/telegram/user_results/user_812954600_results.jpeg"));
+            sendPhoto.setPhoto(new File(messageStrings.PATH_TO_FILES + String.valueOf(chatId) + messageStrings.JPEG_IMAGE_FILE));
             execute(sendPhoto);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            System.out.println("\nПроизошла ошибка при выводе изображения из файла: " + e.toString());
         }
 
 

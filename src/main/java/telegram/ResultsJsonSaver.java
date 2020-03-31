@@ -8,10 +8,15 @@ import java.util.Map;
 
 public class ResultsJsonSaver {
 
+Messages msg = new Messages();
 
-    public <S, T> void saveResults(Long chatID, Map<S, T> resultsOfUser) throws IOException {
+    ResultsJsonSaver() {
+    }
 
-        String pathToFile ="src/main/java/telegram/user_results/user_" + String.valueOf(chatID) + ".json";
+
+    public <S, T> void saveResults(Long chatId, Map<S, T> resultsOfUser) throws Exception {
+
+        String pathToFile = msg.PATH_TO_FILES + String.valueOf(chatId) + msg.JSON_FILE;
 
         Gson gson = new Gson();
 
@@ -21,8 +26,7 @@ public class ResultsJsonSaver {
             FileWriter writer = new FileWriter(pathToFile);
             writer.write(jsonResults);
             writer.close();
-        }
-        catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println("Что-то с записью в файл " + pathToFile + " пошло не так !");
         }
 
