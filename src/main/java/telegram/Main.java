@@ -1,33 +1,16 @@
 package telegram;
 
-import com.google.gson.Gson;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
-import java.util.ArrayList;
 
 public class Main {
 
     public static void main(String[] args) throws TelegramApiException {
 
         System.out.println("Start !\n");
-
-/*      //  Проверка JSON
-        ArrayList<String> myList = new ArrayList<>();
-
-        myList.add("Hello, ");
-        myList.add("world !");
-
-        Gson gson = new Gson();
-
-        String JSON = gson.toJson(myList);
-
-        System.out.println(JSON);
-        System.out.println(gson.fromJson(JSON, ArrayList.class));
-
-*/
 
 
         ApiContextInitializer.init();
