@@ -28,7 +28,8 @@ public class ImageCreate {
 
         int width = 800;   /* Width of the image */
         int height = 600;  /* Height of the image */
-        File pieChart = new File( "src/main/java/telegram/images_results/user_" + user + "_results.jpeg" );
-        ChartUtilities.saveChartAsJPEG( pieChart , chart , width , height );
+
+        File imageChart = new File( "src/main/java/telegram/user_results/user_" + user + "_results.jpeg" );
+        ChartUtilities.saveChartAsJPEG( imageChart , chart , width , height );
     }
 }

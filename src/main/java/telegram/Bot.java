@@ -2,11 +2,13 @@ package telegram;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -115,10 +117,10 @@ public class Bot extends TelegramLongPollingBot {
 
 
                 } catch (TelegramApiException e) {
-                    System.out.println("Ошибка при приеме сообщения от пользователя : " + e.toString());
+                    System.out.println("\nОшибка при приеме сообщения от пользователя : " + e.toString());
                 } catch (NullPointerException ignore) {
                 } catch (Exception n) {
-                    System.out.println("Ошибка неустановленной природы при приеме сообщения : " + n.toString());
+                    System.out.println("\nОшибка неустановленной природы при приеме сообщения : " + n.toString());
                 }
 
             }
@@ -137,9 +139,9 @@ public class Bot extends TelegramLongPollingBot {
             execute(sendMessage);
 
         } catch (TelegramApiException e) {
-            System.out.println("Ошибка при отправке сообщения : " + e.toString());
+            System.out.println("\nОшибка при отправке сообщения : " + e.toString());
         } catch (Exception n) {
-            System.out.println("Ошибка неустановленной природы (при попытке отправить сообщение) : " + n.toString());
+            System.out.println("\nОшибка неустановленной природы (при попытке отправить сообщение) : " + n.toString());
         }
     }
 
@@ -176,9 +178,9 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(chatId, listOfQuestions.get((int) (users.get(chatId)).get(messageStrings.NUMBER_OF_QUESTION)));
 
             } catch (IndexOutOfBoundsException e) {
-                System.out.println("Выход за границы массива : " + e.toString());
+                System.out.println("\nВыход за границы массива : " + e.toString());
             } catch (Exception n) {
-                System.out.println("Ошибка неустановленной природы при отправке сообщения : " + n.toString());
+                System.out.println("\nОшибка неустановленной природы при отправке сообщения : " + n.toString());
             }
         }
 
@@ -410,18 +412,42 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+        showImageResults(chatId);       //  Показ результатов пользователю в виде круговой диаграммы
+}
+
+
+    private synchronized void showImageResults(Long chatId) {
+
         ImageCreate image = new ImageCreate();
+
         try {
-            image.fileImageCreate(chatId);
-        } catch (Exception e) {
-            System.out.println("Произошла ошибка во время создания и записи файла-изображения : " + e.toString());
+            image.fileImageCreate(chatId);     //  Создание файла-изображения с круговой диаграммой
+        }
+        catch (Exception e) {
+            System.out.println("\nПроизошла ошибка во время создания и записи файла-изображения : " + e.toString());
         }
 
 
+
+        SendPhoto sendPhoto = new SendPhoto().setChatId(chatId);   //  Вывод изображения с результатами пользователю
+
+        try {
+            sendPhoto.setPhoto(new File("src/main/java/telegram/user_results/user_812954600_results.jpeg"));
+            execute(sendPhoto);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+
+
+        sendMsg(chatId, "Увеличте изображение кликнув по нему мышкой!");
+
+
+        //  Просмотр результатов в Java-машине (JVM)
         ViewerResults viewerResults = new ViewerResults("Results");
         viewerResults.showResults();
-}
 
+
+}
 
 
     private synchronized void createNewUser(Long chatId) {
