@@ -11,7 +11,7 @@ public class ResultsSaver {
 
     public <S, T> void saveResults(Long chatID, Map<S, T> resultsOfUser) throws IOException {
 
-        String pathToFile = String.valueOf(chatID) + ".json";
+        String pathToFile ="src/main/java/telegram/json_results/user_" + String.valueOf(chatID) + ".json";
 
         Gson gson = new Gson();
 

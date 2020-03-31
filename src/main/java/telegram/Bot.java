@@ -239,6 +239,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
 
+
 /*  Можно сэкономить производительность, и просто сбросить на (0) основные переменные в HashMap <resultsForUser>
 
         //  Удаление юзера из HashMap      //   В принципе, это необязательно, сброс основных переменных в HashMap <resultsForUser> проще и быстрее)
@@ -408,14 +409,19 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
     }
-        showResults(maxSpheres, minSpheres);
+
+        ImageResultsCreate image = new ImageResultsCreate();
+        try {
+            image.fileImageCreate(chatId);
+        } catch (Exception e) {
+            System.out.println("Произошла ошибка во время создания и записи файла-изображения : " + e.toString());
+        }
+
+
+        ViewerResults viewerResults = new ViewerResults("Results");
+        viewerResults.showResults();
 }
 
-
-    private synchronized void showResults (List<Integer> maxSpheres, List<Integer> minSpheres) {
-
-
-    }
 
 
     private synchronized void createNewUser(Long chatId) {
