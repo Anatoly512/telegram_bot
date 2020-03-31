@@ -239,7 +239,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
 
-/*  Можно сэкономить производительность, и просто сбросить на 0 основные переменные в HashMap <resultsForUser>
+/*  Можно сэкономить производительность, и просто сбросить на (0) основные переменные в HashMap <resultsForUser>
 
         //  Удаление юзера из HashMap      //   В принципе, это необязательно, сброс основных переменных в HashMap <resultsForUser> проще и быстрее)
 
