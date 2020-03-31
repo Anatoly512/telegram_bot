@@ -17,18 +17,20 @@ Messages msg = new Messages();
 
         String user = String.valueOf(chatID);
 
-        DefaultPieDataset dataset = new DefaultPieDataset( );
-        dataset.setValue("Параметр 1", new Double( 20 ) );
-        dataset.setValue("Параметр 2", new Double( 20 ) );
-        dataset.setValue("Параметр 3", new Double( 40 ) );
-        dataset.setValue("Параметр 4", new Double( 10 ) );
-        dataset.setValue("Параметр 5", new Double( 10 ) );
-        dataset.setValue("Параметр 6", new Double( 20 ) );
-        dataset.setValue("Параметр 7", new Double( 10 ) );
-        dataset.setValue("Параметр 8", new Double( 10 ) );
+        DefaultPieDataset dataset = new DefaultPieDataset();
+
+        dataset.setValue(titleOfSpheres.get(0), (int) resultsForUser.get(msg.BUTTON_1));
+        dataset.setValue(titleOfSpheres.get(1), (int) resultsForUser.get(msg.BUTTON_2));
+        dataset.setValue(titleOfSpheres.get(2), (int) resultsForUser.get(msg.BUTTON_3));
+        dataset.setValue(titleOfSpheres.get(3), (int) resultsForUser.get(msg.BUTTON_4));
+        dataset.setValue(titleOfSpheres.get(4), (int) resultsForUser.get(msg.BUTTON_5));
+        dataset.setValue(titleOfSpheres.get(5), (int) resultsForUser.get(msg.BUTTON_6));
+        dataset.setValue(titleOfSpheres.get(6), (int) resultsForUser.get(msg.BUTTON_7));
+        dataset.setValue(titleOfSpheres.get(7), (int) resultsForUser.get(msg.BUTTON_8));
+
 
         JFreeChart chart = ChartFactory.createPieChart(
-                "Название",   // chart title
+                "Ваши сферы жизни",   // chart title
                 dataset,          // data
                 false,             // include legend
                 false,
