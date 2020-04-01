@@ -43,8 +43,8 @@ private Messages msg = new Messages();
                 false);
 
 
-        int width = 1000;   /* Width of the image */
-        int height = 720;  /* Height of the image */
+        int width = 1200;   /* Width of the image */
+        int height = 800;  /* Height of the image */
 
 
         // Определение фона графического изображения
