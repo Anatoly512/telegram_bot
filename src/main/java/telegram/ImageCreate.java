@@ -16,9 +16,10 @@ import java.util.Map;
 
 public class ImageCreate {
 
-Messages msg = new Messages();
+private Messages msg = new Messages();
 
-    public void fileImageCreate(Long chatID, List<String> titleOfSpheres, Map<String, Object> resultsForUser) {
+
+    public synchronized void fileImageCreate(Long chatID, List<String> titleOfSpheres, Map<String, Object> resultsForUser) {
 
         String user = String.valueOf(chatID);
 

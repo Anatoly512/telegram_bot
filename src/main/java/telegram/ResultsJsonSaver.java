@@ -8,13 +8,13 @@ import java.util.Map;
 
 public class ResultsJsonSaver {
 
-Messages msg = new Messages();
+private Messages msg = new Messages();
 
     ResultsJsonSaver() {
     }
 
 
-    public <S, T> void saveResults(Long chatId, Map<S, T> resultsOfUser) throws Exception {
+    public synchronized <S, T> void saveResults(Long chatId, Map<S, T> resultsOfUser) throws Exception {
 
         String pathToFile = msg.PATH_TO_FILES + String.valueOf(chatId) + msg.JSON_FILE;
 
