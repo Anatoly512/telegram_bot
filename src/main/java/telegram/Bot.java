@@ -436,13 +436,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
 
-        sendMsg(chatId, "Увеличте изображение кликнув по нему мышкой!");
-
-
-    //  Просмотр результатов в Java-машине (JVM)
-    //  ViewerResults viewerResults = new ViewerResults("Results");
-    //  viewerResults.showResults();
-
+        sendMsg(chatId, "Увеличьте изображение кликнув по нему мышкой!");
 
 }
 

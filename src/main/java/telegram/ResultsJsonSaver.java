@@ -26,7 +26,7 @@ Messages msg = new Messages();
             FileWriter writer = new FileWriter(pathToFile);
             writer.write(jsonResults);
             writer.close();
-        } catch (IOException ex) {
+        } catch (IOException e) {
             System.out.println("Что-то с записью в файл " + pathToFile + " пошло не так !");
         }
 
